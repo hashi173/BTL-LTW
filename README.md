@@ -1,6 +1,6 @@
 # Hashiji Cafe -- Coffee Shop Management System
 
-A full-stack coffee shop management platform built with **Java 17 / Spring Boot 3**. Designed for real-world operations: online ordering, employee shift tracking, inventory management, AI-powered product recommendations, and a professional customer-facing storefront.
+A full-stack coffee shop management platform built with **Java 17 / Spring Boot 3**. Designed for real-world operations: online ordering, recruitment management, financial tracking, and a professional customer-facing storefront.
 
 **Live Demo**: [Deploy your own instance -- see Deployment Guide below]
 
@@ -15,39 +15,33 @@ A full-stack coffee shop management platform built with **Java 17 / Spring Boot 
 - **ACID Transactions**: Demonstrable rollback capabilities when placing an order with insufficient inventory.
 
 ### Customer Storefront (Public)
-- Responsive SPA-style homepage with product carousel, careers portal, and contact form
-- Full shopping cart with size and topping customization
-- Order checkout with real-time tracking via unique tracking codes
-- Clean and modern interface with localized content
-### AI Recommendation Engine
-- **5 strategies**: Cold Start (best sellers), Content-Based Filtering (TF cosine similarity), Collaborative Filtering (user-based KNN with Jaccard), Hybrid blending, and Semantic Search
-- Semantic search leverages product **tags** for accurate matching -- e.g., typing "milk" correctly surfaces milk-based drinks only
-- No external API dependencies; all algorithms run in-process
+- **Responsive Homepage**: Modern design with product carousels, category filtering, and smooth transitions.
+- **Full Shopping Cart**: Support for product customization including sizes, toppings, and special notes.
+- **Recruitment Portal**: Public job board with paginated job listings and CV upload functionality.
+- **Order Tracking**: Real-time order status lookup using unique tracking codes.
+- **Clean UI**: Built with Bootstrap 5 and customized CSS for a premium, localized experience.
 
 ### Admin Dashboard
-- Revenue analytics with Chart.js (monthly trends, daily breakdown)
-- Top-selling product rankings with images
-- Order management with status workflow (Pending -> Confirmed -> Shipping -> Completed)
-- One-click order cancellation and direct customer contact (click-to-call)
-- Monthly financial history with revenue, expenses, and net profit
+- **Revenue Analytics**: Visual reporting with Chart.js showing monthly trends and daily breakdowns.
+- **Product Performance**: Top-selling product rankings with visual metrics.
+- **Order Management**: Comprehensive status workflow (Pending -> Confirmed -> Shipping -> Completed).
+- **One-click Actions**: Quick status updates, order cancellations, and direct customer contact shortcuts.
 
-### Human Resources
-- Job posting management with public careers portal
-- Application tracking with file upload (CV/resume)
-- Applicant status pipeline: New -> Reviewed -> Interviewing -> Hired/Rejected
-- Tracking codes for applicants to check status
+### Recruitment & Careers
+- **Job Posting Management**: Create and manage job openings with specific types and requirements.
+- **Application Pipeline**: Track applicants from "New" through "Interviewing" to "Hired/Rejected".
+- **CV Management**: Centralized storage and viewing of applicant resumes.
+- **Status Tracking**: Applicants can check their progress using unique tracking codes.
 
-### Inventory and Expenses
-- Ingredient stock management with per-unit cost tracking
-- Product recipe system linking ingredients to menu items
-- Expense categorization and monthly reporting
-- Automated inventory deduction based on recipes when orders complete
+### Financial Tracking
+- **Expense Management**: Log and categorize business expenses (ingredients, utilities, etc.).
+- **Profit Reporting**: Automatic calculation of net profit by comparing revenue against expenses.
+- **Financial History**: Monthly archive of financial performance for historical analysis.
 
 ### Security
-- Spring Security with role-based access (ADMIN, STAFF)
-- BCrypt password hashing
-- CSRF protection enabled by default
-- Sensitive configs externalized via environment variables
+- **Spring Security**: Robust role-based access control (ADMIN, STAFF).
+- **Data Protection**: BCrypt password hashing and CSRF protection.
+- **Environment Safety**: Sensitive configurations externalized via environment variables.
 
 ---
 
@@ -58,7 +52,6 @@ A full-stack coffee shop management platform built with **Java 17 / Spring Boot 
 | Backend     | Java 17, Spring Boot 3.2, Spring Security, JPA |
 | Database    | PostgreSQL (Supabase cloud, Docker, or local)   |
 | Frontend    | Thymeleaf, Bootstrap 5, HTMX, Chart.js          |
-| AI/ML       | Custom TF-IDF, Cosine Similarity, KNN (no external APIs) |
 | Caching     | Spring Cache (Simple / Redis)                   |
 | Build       | Maven with wrapper (no global install needed)   |
 
@@ -104,20 +97,30 @@ We have prepared a complete SQL script featuring Triggers, Stored Procedures, an
 ```
 src/main/java/com/coffeeshop/
   config/       -- Security, data seeding, MVC, Redis configuration
-  controller/   -- REST and MVC controllers (19 controllers)
-  dto/          -- Data transfer objects for cart, etc.
+  controller/   -- MVC controllers (14 controllers)
+  dto/          -- Data transfer objects for cart and requests
   entity/       -- JPA entities (UUID based)
   repository/   -- Spring Data JPA repositories
-  service/      -- Business logic and AI recommendation engine
+  service/      -- Core business logic services
 
 src/main/resources/
   schema-advanced.sql -- Advanced PostgreSQL Features (Triggers/Procedures)
   seed-data.sql       -- Manual SQL demo data for DBMS presentation only
-  application-dev.properties -- Enables Java-based dev/demo seeding
-  templates/    -- Thymeleaf templates (admin, cart, checkout, tracking, etc.)
-  static/       -- CSS, JS, product images
-  messages.properties  -- Application message bundles
+  application.properties -- Primary configuration
+  templates/    -- Thymeleaf templates (admin, storefront, dashboard, etc.)
+  static/       -- CSS, JS, and asset files
+  messages.properties  -- Localization bundles
 ```
+
+---
+
+## Documentation
+
+Detailed documentation is available in the `/docs` directory:
+- [API Reference](docs/LTW/api_reference.md)
+- [Postman Guide](docs/LTW/postman_guide.md)
+- [Deployment Guide](docs/DEPLOYMENT.md)
+- [Database Schema](docs/DMBS/schema.md)
 
 ---
 
