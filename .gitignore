@@ -1,36 +1,28 @@
+# Build outputs
 target/
-*.class
-*.jar
-*.war
-*.ear
-*.log
-*.zip
-*.tar.gz
-*.rar
+target-codex/
 
-# Maven wrapper
-.mvn/
-
-# Virtual machine crash logs
-hs_err_pid*
-
-# IDEs
+# IDE files
 .idea/
 *.iml
 .vscode/
+*.classpath
+*.project
 .settings/
-.classpath
-.project
-
-# Sensitive / local-only files
-application-dev.properties
-application-local.properties
-.env
-uploads/
 
 # OS files
 .DS_Store
 Thumbs.db
 
-# Build artifacts
-build2.log
+# Maven wrapper cache
+.mvn/wrapper/maven-wrapper.jar
+
+# Logs
+*.log
+logs/
+
+# Uploaded files
+uploads/
+
+# Spring Boot config with secrets (use env vars instead)
+application-local.properties
