@@ -2,94 +2,127 @@
 
 ## 1. Introduction
 
-**Hashiji Cafe** is a full-featured Coffee Shop Management web application built by Group 5, IT Year-3 Semester 2, PTIT.
-The system covers the full customer ordering flow (menu → cart → checkout → tracking) and a comprehensive admin panel for day-to-day business management.
+**Hashiji Cafe** là ứng dụng web quản lý quán cà phê do nhóm 3 thành viên xây dựng trong khuôn khổ bài tập lớn môn Lập trình Web, IT Năm 3, PTIT.
+
+Hệ thống bao phủ toàn bộ luồng đặt hàng phía khách hàng (menu → giỏ hàng → thanh toán → tra cứu) và bảng điều khiển admin toàn diện cho quản lý vận hành quán.
 
 ---
 
 ## 2. Tech Stack
 
 | Layer | Technology |
-|---|---|
+|-------|-----------|
 | Language | Java 17 |
 | Framework | Spring Boot 3.2.2 |
 | Template Engine | Thymeleaf |
 | Security | Spring Security 6 |
 | ORM | Spring Data JPA / Hibernate |
-| Database | PostgreSQL (production), H2 (tests) |
+| Database | PostgreSQL 15 (production), H2 (tests) |
 | PDF Export | OpenPDF (LibrePDF) |
-| Caching | Redis (session-level caching) |
+| Caching | Redis (category/product cache), Spring Cache |
 | Build Tool | Maven |
-| Containerization | Docker / Docker Compose |
 
 ---
 
 ## 3. Key Features
 
-### Customer Side
-- **Menu browsing** — Filter by category, keyword search (AJAX, no page reload)
-- **Product detail** — Size selection, topping customization, sugar/ice level
-- **Shopping cart** — Session-based cart with quantity update and removal
-- **Checkout** — Address, phone, optional note; generates tracking code
-- **Order tracking** — Look up order or job application by tracking code; cancel PENDING orders
-- **Invoice download** — PDF invoice per order (`/invoice/{orderId}`)
+### Customer Side (Public)
+- **Duyệt menu** — Lọc theo danh mục, tìm kiếm từ khóa (AJAX, không reload trang)
+- **Chi tiết sản phẩm** — Chọn size, chọn topping, thiết lập đường/đá
+- **Giỏ hàng** — Session-based, cập nhật số lượng, xóa từng món
+- **Checkout** — Nhập địa chỉ, số điện thoại, ghi chú; sinh tracking code
+- **Tra cứu đơn hàng** — Tra theo tracking code; xem tiến trình (progress bar); huỷ đơn PENDING
+- **Tải hoá đơn PDF** — `/invoice/{orderId}` tạo file PDF trực tiếp
 
 ### Admin Panel (`/admin`)
-- **Dashboard** — Revenue KPIs, net profit, Chart.js monthly trend + top-selling products
-- **Products** — CRUD with image upload or URL, size tiers, ingredient recipes, active/inactive toggle
-- **Categories** — Manage drink categories
-- **Toppings** — Manage topping options and prices
-- **Ingredients** — Track stock quantity for inventory deduction on order completion
-- **Orders** — View, filter, change status, cancel; paginated active vs. history tables
-- **Users** — Create/deactivate staff accounts, role assignment
-- **Work Shifts** — Admin creates/closes shifts; track orders per shift, calculate payroll
-- **Expenses** — Log operational expenses for profit calculation
-- **Recruitment** — Post job openings; manage CV applications; track application status
-- **History** — Monthly financial summary with Chart.js overlay; drill-down to order list
+- **Dashboard** — KPI: doanh thu, chi phí, lợi nhuận, số đơn; Chart.js trend + top sản phẩm bán chạy
+- **Sản phẩm** — CRUD đầy đủ, upload ảnh hoặc nhập URL, quản lý giá theo size, bật/tắt bán
+- **Danh mục** — Quản lý category (Coffee, Tea, Smoothie, Juice...)
+- **Topping** — Quản lý tùy chọn topping và giá
+- **Đơn hàng** — Xem, tìm kiếm, lọc theo trạng thái, chuyển trạng thái theo luồng, huỷ
+- **Chi phí** — Ghi nhận chi phí vận hành (Utilities, Ingredients, Rent, Payroll)
+- **Tuyển dụng** — Đăng tin tuyển dụng, quản lý đơn CV, theo dõi trạng thái ứng viên
+- **Lịch sử tài chính** — Tổng hợp doanh thu/chi phí/lợi nhuận theo tháng; drill-down chi tiết
 
 ---
 
-## 4. Architecture
+## 4. Luồng trạng thái đơn hàng
+
+```
+PENDING → CONFIRMED → SHIPPING → COMPLETED
+         ↘           ↘          ↘
+          CANCELLED  CANCELLED  CANCELLED
+```
+
+| Trạng thái | Nút Action (Trang danh sách) |
+|------------|------------------------------|
+| PENDING | ✅ Accept · ❌ Cancel |
+| CONFIRMED | 🚚 Ship · ❌ Cancel |
+| SHIPPING | 🏁 Complete · ❌ Cancel |
+| COMPLETED | (chỉ xem Details) |
+| CANCELLED | (chỉ xem Details) |
+
+---
+
+## 5. Entity Codes (ID Format)
+
+| Entity | Format | Ví dụ |
+|--------|--------|-------|
+| Category | `CAT-00001` | CAT-00001, CAT-00002 |
+| Product | `PRD-00001` | PRD-00001, PRD-00006 |
+| Order | `ORD-000001` | ORD-000001, ORD-000150 |
+| Job Application | `CV-XXXXXXXX` | CV-A8F2C1D3 |
+
+---
+
+## 6. Architecture
 
 ```
 Browser
   └─ HTTP Request
        └─ Spring Security Filter Chain
             └─ Controller (Thymeleaf MVC)
-                 ├─ Service Layer (business logic)
+                 ├─ Service Layer (business logic + @Cacheable)
                  │    └─ Repository (Spring Data JPA)
                  │         └─ PostgreSQL
                  └─ Static view (HTML + CSS + JS)
 ```
 
-- **Session-based cart** — Cart is stored in `HttpSession`, not the database.
-- **Snapshot approach for orders** — `order_items` stores product name and price at time of purchase, so historical orders are unaffected by product edits.
-- **Inventory deduction** — Triggered when an order status changes to `COMPLETED`.
+**Các design decision quan trọng:**
+
+| Decision | Lý do |
+|----------|-------|
+| Session cart (`HttpSession`) | Đơn giản, không cần bảng DB riêng; tự xóa khi session hết hạn |
+| Snapshot trong `order_items` | Lịch sử đơn hàng không đổi khi sản phẩm bị sửa/xóa sau này |
+| UUID primary keys | Tránh sequential ID guessing; globally unique |
+| Thymeleaf fragments | Trả `home :: productList` cho AJAX, không reload toàn trang |
+| Redis cache | `@Cacheable("categories")` và `"products"` giảm tải DB; evict khi có thay đổi |
+| `cleanupData()` trong DataSeeder | Đảm bảo DB luôn sạch khi seed lại ở môi trường dev |
 
 ---
 
-## 5. Roles & Access
+## 7. Roles & Access
 
 | Role | Access |
-|---|---|
-| `ROLE_ADMIN` | Full `/admin/**` access, all features |
-| `ROLE_STAFF` | Standard authenticated pages |
+|------|--------|
+| `ROLE_ADMIN` | Toàn bộ `/admin/**`, tất cả tính năng |
 | Anonymous | Public pages: home, menu, cart, checkout, tracking, careers |
 
-Login redirects: ADMIN → `/admin/dashboard`, others → `/`.
+Login redirects: ADMIN → `/admin/dashboard`.
 
 ---
 
-## 6. Running Locally
+## 8. Running Locally
 
 ```bash
-# 1. Start PostgreSQL and Redis via Docker
-docker-compose up -d
-
-# 2. Run the application
-./mvnw spring-boot:run
+# 1. Chuẩn bị PostgreSQL (xem DEPLOYMENT.md)
+# 2. Chạy app với dev profile
+$env:APP_PROFILE="dev"
+.\mvnw.cmd spring-boot:run
 ```
 
 Default URL: `http://localhost:8080`
 
-See [DEPLOYMENT.md](DEPLOYMENT.md) for production deployment on Render.
+Tài khoản dev: `admin` / `123456`
+
+Xem chi tiết: [DEPLOYMENT.md](../DEPLOYMENT.md) | [SEEDING.md](../SEEDING.md)

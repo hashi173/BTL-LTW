@@ -11,27 +11,27 @@
 
 **Q: Hệ thống của các em xây dựng bằng gì? Tại sao chọn Spring Boot?**
 
-> Spring Boot giúp cấu hình tự động (auto-configuration), tích hợp Spring Security, Spring Data JPA, Thymeleaf dễ dàng. Phù hợp cho dự án web MVC vừa và nhỏ, build nhanh, có thể deploy lên Docker.
+> Spring Boot giúp cấu hình tự động (auto-configuration), tích hợp Spring Security, Spring Data JPA, Thymeleaf dễ dàng. Phù hợp cho dự án web MVC vừa và nhỏ, build nhanh và test được bằng JUnit ngay trong project.
 
 ---
 
 **Q: Database các em dùng gì? Giải thích cấu trúc chính?**
 
-> PostgreSQL. Các bảng chính: `users`, `products`, `categories`, `orders`, `order_items`, `work_shifts`, `expenses`, `job_applications`.
+> PostgreSQL 15. Các bảng chính: `users`, `products`, `categories`, `product_sizes`, `toppings`, `orders`, `order_items`, `expenses`, `job_postings`, `job_applications`.
 > Primary key dùng UUID để tránh sequential ID guessing.
-> `order_items` lưu snapshot (tên, giá tại thời điểm mua) vì sản phẩm có thể bị sửa/xóa sau này — đây là kỹ thuật phổ biến trong thương mại điện tử.
+> `order_items` lưu snapshot (tên sản phẩm, giá tại thời điểm mua) vì sản phẩm có thể bị sửa/xóa sau này — đây là kỹ thuật phổ biến trong thương mại điện tử.
 
 ---
 
 **Q: Giải thích Trigger và Stored Procedure trong project?**
 
-> Có 2 Stored Procedure:
-> - `place_order`: Tạo đơn hàng nguyên tử, kiểm tra địa chỉ, áp dụng khuyến mãi.
-> - `get_revenue_report`: Thống kê doanh thu theo ngày trong khoảng thời gian.
+> Có trong `schema-advanced.sql`:
+> - **Stored Procedure** `place_order`: Tạo đơn hàng nguyên tử, kiểm tra địa chỉ, áp dụng khuyến mãi.
+> - **Stored Procedure** `get_revenue_report`: Thống kê doanh thu theo ngày trong khoảng thời gian.
 >
-> Có 3 Trigger:
+> **Trigger:**
 > - `trg_update_product_rating`: Tự động cập nhật `avg_rating`, `review_count` khi có đánh giá mới.
-> - `trg_log_cart_behavior`: Ghi log hành vi người dùng khi thêm vào giỏ hàng (ADD_TO_CART).
+> - `trg_log_cart_behavior`: Ghi log hành vi khi thêm vào giỏ hàng.
 > - `trg_single_default_address`: Đảm bảo mỗi user chỉ có 1 địa chỉ `is_default = TRUE`.
 
 ---
@@ -40,10 +40,10 @@
 
 > Dùng Spring Security 6:
 > - Form login với `/do-login`, logout với `/logout`.
-> - Phân quyền theo role: `ROLE_ADMIN` truy cập `/admin/**`, còn lại public hoặc authenticated.
-> - Password hash bằng BCrypt.
+> - Phân quyền theo role: `ROLE_ADMIN` truy cập `/admin/**`, còn lại public.
+> - Password hash bằng BCrypt — không lưu plaintext.
 > - CSRF protection được Spring Security bật mặc định.
-> - Custom `AuthenticationSuccessHandler` redirect: ADMIN → `/admin/dashboard`, các role khác → `/`.
+> - Custom `AuthenticationSuccessHandler` redirect: ADMIN → `/admin/dashboard`.
 
 ---
 
@@ -51,10 +51,10 @@
 
 > 1. Khách vào trang chủ → Xem menu → Chọn sản phẩm (kích thước, topping, đường, đá)
 > 2. Nhấn "Add to Cart" → `POST /cart/add` → Lưu vào `HttpSession`
-> 3. Vào `/cart` xem giỏ → Checkout tại `/checkout/place-order`
+> 3. Vào `/cart` xem giỏ → Checkout tại `POST /checkout/place-order`
 > 4. Hệ thống tạo Order trong DB, sinh tracking code dạng `ORD-XXXXXX`
 > 5. Khách dùng tracking code tra cứu tại `/tracking/search?code=ORD-XXXXXX`
-> 6. Download hóa đơn PDF tại `/invoice/{orderId}`
+> 6. Download hoá đơn PDF tại `/invoice/{orderId}`
 
 ---
 
@@ -75,7 +75,42 @@
 
 ---
 
-## 📦 Câu hỏi cho Thành viên 2 (Orders, Cart, Checkout, Tracking)
+**Q: Caching hoạt động thế nào trong project?**
+
+> Dùng Spring Cache với Redis làm backend:
+> - `@Cacheable("categories")` trong `CategoryService.getAllCategories()` — giảm tải DB khi menu hiển thị.
+> - `@Cacheable("products")` trong `ProductService` — cache kết quả tìm kiếm sản phẩm.
+> - `@CacheEvict` được gọi khi save/delete category hoặc product.
+> - `DataSeeder` evict toàn bộ cache sau khi seed xong để tránh dữ liệu stale.
+
+---
+
+## 📦 Câu hỏi cho Phan — Products, Categories, Toppings, Dashboard
+
+**Q: Upload ảnh sản phẩm xử lý ra sao?**
+> File upload dùng `MultipartFile`, lưu vào thư mục `uploads/products/` với tên UUID-prefixed.
+> Đường dẫn `/uploads/products/filename.jpg` được lưu vào cột `image` của `products`.
+> Nếu nhập URL thay vì upload, hệ thống lưu nguyên URL đó.
+
+**Q: Tại sao có cả `activate` và `deactivate` thay vì `delete`?**
+> Soft-delete: Sản phẩm không hiện trên menu nhưng vẫn giữ lịch sử `order_items`.
+> Xóa thật có thể gây lỗi FK constraint từ `order_items`.
+
+**Q: AJAX filter menu hoạt động thế nào?**
+> Frontend gọi `GET /products/fragment?categoryId=X` → Controller trả về Thymeleaf fragment `home :: productList` (một phần HTML).
+> JS thay thế nội dung div mà không reload toàn trang.
+
+**Q: ProductCode được tạo ra như thế nào?**
+> `DataSeeder` dùng counter tăng dần: `PRD-00001`, `PRD-00002`, ...
+> Với sản phẩm mới tạo qua UI, `ProductService.saveProduct()` gọi `EntityDisplayUtils.buildReadableCode("PRD", name, id)` để tạo code từ tên + UUID.
+
+**Q: Tại sao cần Redis cache cho categories?**
+> Menu phía customer gọi `getAllCategories()` ở mọi request. Cache giúp tránh query DB lặp đi lặp lại.
+> Khi admin thêm/sửa/xóa category thì `@CacheEvict` tự động xóa cache cũ.
+
+---
+
+## 📦 Câu hỏi cho Hà — Orders, Cart, Checkout, Tracking, Invoice, History
 
 **Q: Tracking code được sinh ra như thế nào?**
 > Lấy UUID ngẫu nhiên, xóa dấu `-`, uppercase, lấy 6 ký tự đầu, prefix `ORD-`. Ví dụ: `ORD-A8F2C1`.
@@ -83,59 +118,67 @@
 **Q: Làm sao đảm bảo tracking code là duy nhất?**
 > Xác suất trùng với 6 ký tự hex là cực thấp. Trong production nên thêm DB unique constraint và retry nếu trùng.
 
-**Q: Admin update status order thì inventory xử lý ra sao?**
-> Khi status chuyển sang `COMPLETED` lần đầu (kiểm tra `previousStatus != COMPLETED`), `OrderService` sẽ duyệt `order_items`, theo `ProductRecipe` trừ `stock_quantity` của từng `Ingredient`.
+**Q: Luồng trạng thái đơn hàng hoạt động thế nào?**
+> `PENDING → CONFIRMED → SHIPPING → COMPLETED`, có thể CANCELLED ở bất kỳ bước nào (trừ COMPLETED).
+> Admin nhấn nút tương ứng trên trang danh sách: Accept / Ship / Complete / Cancel.
+> Sau khi nhấn từ trang danh sách, redirect về `/admin/orders`. Từ trang detail thì ở lại detail (dùng hidden `redirect=detail`).
 
 **Q: Invoice PDF được tạo bằng thư viện gì?**
-> OpenPDF (fork của iText 4). Tạo trực tiếp trên `response.getOutputStream()`, không lưu file.
+> OpenPDF (fork của iText 4). Tạo trực tiếp trên `response.getOutputStream()`, không lưu file trên server.
+
+**Q: Tracking page hiển thị trạng thái đơn như thế nào?**
+> Progress bar 4 bước: PENDING=25%, CONFIRMED=50%, SHIPPING=75%, COMPLETED=100%.
+> Nếu CANCELLED: ẩn progress bar, hiện thông báo đỏ.
+> Badge màu: PENDING/CONFIRMED/SHIPPING = xanh, COMPLETED = xanh lá, CANCELLED = đỏ.
+
+**Q: History tài chính được tính như thế nào?**
+> `AdminHistoryController` query `OrderRepository` và `ExpenseRepository` theo tháng/năm.
+> Revenue = tổng `total_amount` của đơn COMPLETED trong tháng.
+> Net Profit = Revenue - Expenses.
+> Dữ liệu trả về Chart.js vẽ line chart 10 tháng gần nhất.
 
 ---
 
-## 📦 Câu hỏi cho Thành viên 1 (Products, Categories, Toppings, Ingredients)
+## 📦 Câu hỏi cho Quỳnh — Expenses, Recruitment, Auth
 
-**Q: Upload ảnh sản phẩm xử lý ra sao?**
-> File upload dùng `MultipartFile`, lưu vào thư mục `uploads/products/` với tên UUID-prefixed. Đường dẫn `/uploads/products/filename.jpg` được lưu vào cột `image` của `products`.
-
-**Q: Tại sao có cả `activate` và `deactivate` thay vì `delete`?**
-> Soft-delete: Sản phẩm không hiện trên menu nhưng vẫn giữ lịch sử order_items. Xóa thật có thể gây lỗi FK constraint từ orders.
-
-**Q: Ingredient và ProductRecipe liên quan nhau thế nào?**
-> `product_recipes` là bảng junction: mỗi dòng ánh xạ một `product` với một `ingredient` và số lượng cần dùng (`quantity_required`). Khi order hoàn thành, system trừ tồn kho theo recipe.
-
-**Q: AJAX filter menu hoạt động thế nào?**
-> Frontend gọi `GET /products/fragment?categoryId=X` → Controller trả về Thymeleaf fragment `home :: productList` (một phần HTML). JS thay thế nội dung div mà không reload toàn trang.
-
----
-
-## 📦 Câu hỏi cho Quỳnh Phan Hà (Users, Shifts, Expenses, Recruitment)
-
-**Q: Tạo User mới thì password mặc định là gì?**
-> `123456`, được BCrypt hash trước khi lưu. Admin cần hướng dẫn nhân viên đổi password sau lần đăng nhập đầu.
-
-**Q: Work Shift quản lý ca làm việc thế nào?**
-> Admin tạo ca (userId + startTime). Khi kết thúc ca, system tính `total_revenue` từ orders trong khoảng thời gian đó, tính `cash_variance = end_cash - (start_cash + revenue)`.
-
-**Q: Payroll được tính thế nào?**
-> `WorkShiftService.calculateTotalPayroll()` lặp qua tất cả CLOSED shifts, tính `hours * user.hourlyRate` rồi cộng tổng. Đây là ước tính MVP; hệ thống thực tế cần xử lý phức tạp hơn (OT, tax, v.v.)
+**Q: Chi phí (Expense) được phân loại thế nào?**
+> `Expense` có trường `category` (String): Utilities, Ingredients, Rent, Payroll, Other.
+> Admin tự nhập khi log expense. Không có bảng category riêng cho expense.
 
 **Q: Job Application tracking code khác Order tracking code không?**
-> Có. Order: `ORD-XXXXXX`. Job application: `CV-XXXXXXXX` (8 ký tự). Cùng endpoint `/tracking/search` nhưng hệ thống tìm Order trước, nếu không thấy mới tìm JobApplication.
+> Có. Order: `ORD-XXXXXX`. Job application: `CV-XXXXXXXX` (8 ký tự).
+> Cùng endpoint `/tracking/search` nhưng hệ thống tìm Order trước, nếu không thấy mới tìm JobApplication.
 
-**Q: Tại sao deleteUser có thể fallback sang deactivate?**
-> Nếu user đã có orders hoặc shifts thì xóa thật sẽ vi phạm FK constraint. Thay vì hiện lỗi xấu, hệ thống set `is_active = false` và thông báo rõ lý do cho admin.
+**Q: Trạng thái đơn ứng tuyển có những bước nào?**
+> `NEW → REVIEWED → INTERVIEWING → HIRED` hoặc `REJECTED`.
+> Admin cập nhật thủ công qua `POST /admin/recruitment/{id}/status`.
+
+**Q: Upload CV xử lý ra sao?**
+> Tương tự upload ảnh sản phẩm: `MultipartFile` lưu vào `uploads/cvs/`, chỉ chấp nhận file PDF.
+> Đường dẫn file được lưu vào `job_applications.cv_file_path`.
+
+**Q: Login redirect hoạt động thế nào?**
+> `CustomAuthenticationSuccessHandler` kiểm tra role sau khi đăng nhập:
+> - `ROLE_ADMIN` → redirect `/admin/dashboard`
+> - Các role khác → redirect `/`
 
 ---
 
 ## 💡 Câu hỏi hay bị hỏi thêm
 
-**Q: Redis dùng để làm gì trong project?**
-> Cấu hình trong `RedisConfig.java` và `docker-compose.yml`. Hiện tại dùng để lưu HTTP session (Spring Session), cho phép session persist qua server restart.
-
 **Q: Có implement i18n không?**
-> Có. `messages_en.properties` và `messages_vi.properties`. Các thông báo lỗi (như order not found, apply success/error) được lấy qua `MessageSource` theo locale của browser.
+> Có. `messages.properties` cho các thông báo lỗi (như "Không tìm thấy đơn hàng", "Nộp đơn thành công").
+> `MessageSource` trả message theo `Locale` của request.
 
 **Q: Làm sao biết product nào đang bán chạy?**
-> `OrderRepository.findTopSellingProductByMonth()` — JPQL query group by `product_id`, sum `quantity`, limit 5. Kết quả dùng cho Chart.js trên dashboard và history.
+> `OrderRepository.findTopSellingProductByMonth()` — JPQL query group by `snapshotProductName`, sum `quantity`, limit 5.
+> Kết quả dùng cho Chart.js trên dashboard và history.
 
-**Q: Deployment thế nào?**
-> Docker Compose: 3 service — PostgreSQL, Redis, Spring Boot app. Xem `Dockerfile` và `docker-compose.yml`. Chi tiết trong `docs/DEPLOYMENT.md`.
+**Q: DataSeeder làm gì khi app khởi động?**
+> Xóa sạch theo thứ tự FK-safe: `order_items → orders → expenses → users → product_sizes → products → categories`.
+> Seed lại toàn bộ với ID chuẩn (`CAT-00001`, `PRD-00001`, `ORD-000001`).
+> Evict toàn bộ Redis cache sau khi seed xong.
+
+**Q: Tại sao dùng UUID thay vì auto-increment?**
+> UUID globally unique, tránh sequential ID guessing (bảo mật hơn khi ID xuất hiện trong URL).
+> Tuy nhiên để dễ nhìn, mỗi entity có thêm `displayCode` (`ORD-000001`, `PRD-00001`...) dùng để hiển thị.
