@@ -1,0 +1,5 @@
+# Created at 2026-05-01T03:12:38.329
+Boot Manifest-JAR contains absolute paths in classpath 'D:\Project\Hashiji-Cafe-main\target-codex\test-classes'
+Hint: <argLine>-Djdk.net.URLClassPath.disableClassPathURLCheck=true</argLine>
+'other' has different root
+

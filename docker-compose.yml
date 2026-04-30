@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: hashiji-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: cafe_db
+      POSTGRES_USER: cafe_admin
+      POSTGRES_PASSWORD: 123
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cafe_admin -d cafe_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: hashiji-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@hashiji.cafe
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  hashiji-app:
+    build: .
+    container_name: hashiji-app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      DB_URL: jdbc:postgresql://postgres:5432/cafe_db
+      DB_USERNAME: cafe_admin
+      DB_PASSWORD: 123
+      APP_PROFILE: dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:
