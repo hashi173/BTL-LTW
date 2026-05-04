@@ -45,7 +45,7 @@ public class ProductController {
 
         if (search != null && !search.isEmpty()) {
             org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest
-                    .of(activePage, pageSize, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.ASC, "id"));
+                    .of(activePage, pageSize, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt"));
             org.springframework.data.domain.Page<Product> productPage = productService.searchProductsPaginated(search,
                     pageable);
             model.addAttribute("searchResults", productPage.getContent());
@@ -56,9 +56,9 @@ public class ProductController {
             model.addAttribute("isSearching", true);
         } else {
             org.springframework.data.domain.Pageable activeRequest = org.springframework.data.domain.PageRequest
-                    .of(activePage, pageSize, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.ASC, "id"));
+                    .of(activePage, pageSize, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt"));
             org.springframework.data.domain.Pageable inactiveRequest = org.springframework.data.domain.PageRequest
-                    .of(inactivePage, pageSize, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.ASC, "id"));
+                    .of(inactivePage, pageSize, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt"));
 
             org.springframework.data.domain.Page<Product> activeProductPage = productService
                     .getProductsByStatusPaginated(true, activeRequest);

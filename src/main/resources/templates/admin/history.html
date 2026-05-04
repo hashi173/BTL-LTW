@@ -30,7 +30,7 @@
 
             <div class="card shadow mb-5">
                 <div class="card-header bg-white">
-                    <h5 class="mb-0 fw-bold text-primary"><i class="fas fa-chart-bar me-2"></i>Monthly Performance</h5>
+                    <h5 class="mb-0 fw-bold text-primary"><i class="fas fa-chart-bar me-2"></i>Monthly Revenue</h5>
                 </div>
                 <div class="card-body">
                     <canvas id="historyChart" height="100"></canvas>
@@ -49,8 +49,6 @@
                                 <tr>
                                     <th>Month</th>
                                     <th>Revenue</th>
-                                    <th>Expenses</th>
-                                    <th>Net Profit</th>
                                     <th>Top Selling Item</th>
                                     <th></th>
                                 </tr>
@@ -65,19 +63,6 @@
                                         <span
                                             th:text="${#numbers.formatDecimal(stat.revenue, 0, 'COMMA', 0, 'POINT')} + ' đ'">0
                                             đ</span>
-                                    </td>
-                                    <td class="text-danger">
-                                        <i class="fas fa-arrow-down small"></i>
-                                        <span
-                                            th:text="${#numbers.formatDecimal(stat.expenses, 0, 'COMMA', 0, 'POINT')} + ' đ'">0
-                                            đ</span>
-                                    </td>
-                                    <td>
-                                        <span
-                                            th:class="${stat.netProfit >= 0 ? 'badge bg-success fs-6' : 'badge bg-danger fs-6'}"
-                                            th:text="${#numbers.formatDecimal(stat.netProfit, 0, 'COMMA', 0, 'POINT')} + ' đ'">
-                                            0 đ
-                                        </span>
                                     </td>
                                     <td>
                                         <div th:if="${stat.topProductQuantity > 0}"
@@ -102,7 +87,7 @@
                                     </td>
                                 </tr>
                                 <tr th:if="${#lists.isEmpty(monthlyStats)}">
-                                    <td colspan="6" class="py-4 text-muted">No history data available.</td>
+                                    <td colspan="4" class="py-4 text-muted">No history data available.</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -129,8 +114,6 @@
                 const ctx = canvas.getContext('2d');
                 const labels = /*[[${chartLabels}]]*/[];
                 const revenues = /*[[${chartRevenues}]]*/[];
-                const expenses = /*[[${chartExpenses}]]*/[];
-                const profits = /*[[${chartProfits}]]*/[];
 
                 new Chart(ctx, {
                     type: 'bar',
@@ -143,23 +126,6 @@
                                 backgroundColor: 'rgba(25, 135, 84, 0.7)',
                                 borderColor: '#198754',
                                 borderWidth: 1
-                            },
-                            {
-                                label: 'Expenses',
-                                data: expenses,
-                                backgroundColor: 'rgba(220, 53, 69, 0.7)',
-                                borderColor: '#dc3545',
-                                borderWidth: 1
-                            },
-                            {
-                                label: 'Net Profit',
-                                data: profits,
-                                type: 'line',
-                                borderColor: '#0d6efd',
-                                backgroundColor: 'rgba(13, 110, 253, 0.1)',
-                                borderWidth: 2,
-                                fill: false,
-                                tension: 0.3
                             }
                         ]
                     },

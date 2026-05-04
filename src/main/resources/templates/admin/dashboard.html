@@ -5,7 +5,7 @@
     <div>
         <div class="row">
             <!-- Orders -->
-            <div class="col-md-4 col-xl mb-3">
+            <div class="col-md-4 mb-3">
                 <div class="card text-white bg-primary h-100">
                     <div class="card-body">
                         <h6 class="card-title">Orders</h6>
@@ -14,7 +14,7 @@
                 </div>
             </div>
             <!-- Pending -->
-            <div class="col-md-4 col-xl mb-3">
+            <div class="col-md-4 mb-3">
                 <div class="card text-dark bg-warning h-100">
                     <div class="card-body">
                         <h6 class="card-title">Pending</h6>
@@ -23,32 +23,12 @@
                 </div>
             </div>
             <!-- Revenue -->
-            <div class="col-md-4 col-xl mb-3">
+            <div class="col-md-4 mb-3">
                 <div class="card text-white bg-success h-100">
                     <div class="card-body">
                         <h6 class="card-title">Revenue</h6>
                         <p class="card-text fs-4 fw-bold"
                             th:text="${#numbers.formatDecimal(totalRevenue, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 ₫</p>
-                    </div>
-                </div>
-            </div>
-            <!-- Expenses -->
-            <div class="col-md-4 col-xl mb-3">
-                <div class="card text-white bg-danger h-100">
-                    <div class="card-body">
-                        <h6 class="card-title">Expenses</h6>
-                        <p class="card-text fs-4 fw-bold"
-                            th:text="${#numbers.formatDecimal(totalExpenses, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 ₫</p>
-                    </div>
-                </div>
-            </div>
-            <!-- Net Profit -->
-            <div class="col-md-4 col-xl mb-3">
-                <div class="card text-white h-100" th:classappend="${netProfit >= 0 ? 'bg-success' : 'bg-danger'}">
-                    <div class="card-body">
-                        <h6 class="card-title">Net Profit</h6>
-                        <p class="card-text fs-4 fw-bold"
-                            th:text="${#numbers.formatDecimal(netProfit, 0, 'COMMA', 0, 'POINT')} + ' đ'">0 ₫</p>
                     </div>
                 </div>
             </div>

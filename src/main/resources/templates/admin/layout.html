@@ -81,11 +81,6 @@
                 </li>
 
                 <li>
-                    <a href="/admin/expenses" class="nav-link">
-                        <i class="fas fa-money-bill-wave me-2"></i> Expenses
-                    </a>
-                </li>
-                <li>
                     <a href="/admin/recruitment" class="nav-link">
                         <i class="fas fa-user-plus me-2"></i> Recruitment
                     </a>
@@ -103,7 +98,11 @@
                     <strong>User</strong>
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
-                    <li><a class="dropdown-item" href="/logout">Sign out</a></li>
+                    <li>
+                        <form th:action="@{/logout}" method="post" class="d-inline">
+                            <button type="submit" class="dropdown-item border-0 bg-transparent w-100 text-start">Sign out</button>
+                        </form>
+                    </li>
                 </ul>
             </div>
         </div>

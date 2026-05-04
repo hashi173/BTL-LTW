@@ -82,7 +82,7 @@ public class AdminJobController {
 
         if (search != null && !search.isEmpty()) {
             org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest
-                    .of(activePage, pageSize);
+                    .of(activePage, pageSize, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt"));
             org.springframework.data.domain.Page<com.coffeeshop.entity.JobPosting> jobPage = jobPostingRepository
                     .searchJobsPaginated(search, pageable);
 
@@ -94,9 +94,9 @@ public class AdminJobController {
             model.addAttribute("isSearching", true);
         } else {
             org.springframework.data.domain.Pageable activeRequest = org.springframework.data.domain.PageRequest
-                    .of(activePage, pageSize);
+                    .of(activePage, pageSize, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt"));
             org.springframework.data.domain.Pageable closedRequest = org.springframework.data.domain.PageRequest
-                    .of(closedPage, pageSize);
+                    .of(closedPage, pageSize, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt"));
 
             org.springframework.data.domain.Page<com.coffeeshop.entity.JobPosting> activeJobPage = jobPostingRepository
                     .findByIsActive(true, activeRequest);
@@ -123,6 +123,16 @@ public class AdminJobController {
     @PostMapping("/jobs/save")
     public String saveJob(@ModelAttribute com.coffeeshop.entity.JobPosting jobPosting,
             RedirectAttributes redirectAttributes) {
+        // Auto-generate code for new postings
+        if (jobPosting.getJobCode() == null || jobPosting.getJobCode().isEmpty()) {
+            long nextNumber = 1;
+            String code;
+            do {
+                code = String.format("JOB-%06d", nextNumber);
+                nextNumber++;
+            } while (jobPostingRepository.findByJobCode(code).isPresent());
+            jobPosting.setJobCode(code);
+        }
         jobPostingRepository.save(jobPosting);
         redirectAttributes.addFlashAttribute("success", "Job opening saved successfully.");
         return "redirect:/admin/recruitment/jobs";

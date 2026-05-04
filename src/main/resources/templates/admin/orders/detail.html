@@ -52,18 +52,33 @@
                 <div class="card shadow-sm border-0 rounded-4">
                     <div class="card-body p-4">
                         <h5 class="card-title fw-bold mb-3">Order Status</h5>
-                        <form th:action="@{'/admin/orders/' + ${order.id} + '/status'}" method="post">
+                        <!-- Completed/Cancelled: show read-only status -->
+                        <div th:if="${order.status.name() == 'COMPLETED' || order.status.name() == 'CANCELLED'}">
+                            <div class="mb-3">
+                                <label class="form-label text-muted">Current Status</label>
+                                <div class="form-control form-control-lg fw-bold text-center"
+                                    th:classappend="${order.status.name() == 'COMPLETED' ? 'text-success border-success' : 'text-danger border-danger'}"
+                                    th:text="${order.status}">STATUS</div>
+                            </div>
+                            <small class="text-muted d-block text-center lh-sm">
+                                This order is finalized and cannot be changed.
+                            </small>
+                        </div>
+                        <!-- Active orders: show forward-only status dropdown -->
+                        <form th:unless="${order.status.name() == 'COMPLETED' || order.status.name() == 'CANCELLED'}"
+                            th:action="@{'/admin/orders/' + ${order.id} + '/status'}" method="post">
                             <input type="hidden" name="redirect" value="detail">
                             <div class="mb-3">
                                 <label for="status" class="form-label text-muted">Current Status</label>
                                 <select class="form-select form-select-lg fw-bold" name="status" id="status"
                                     onchange="this.form.submit()">
                                     <option th:each="s : ${statuses}" th:value="${s}" th:text="${s}"
-                                        th:selected="${s == order.status}"></option>
+                                        th:selected="${s == order.status}"
+                                        th:disabled="${s.ordinal() < order.status.ordinal() && s.name() != 'CANCELLED'}"></option>
                                 </select>
                             </div>
                             <small class="text-muted d-block text-center lh-sm">
-                                Pending -> Confirmed -> Shipping -> Completed
+                                Pending &rarr; Confirmed &rarr; Shipping &rarr; Completed
                             </small>
                         </form>
                         <hr>

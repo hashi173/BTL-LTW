@@ -28,7 +28,13 @@ public class CategoryService {
     @org.springframework.cache.annotation.CacheEvict(value = "categories", allEntries = true)
     public Category saveCategory(@org.springframework.lang.NonNull Category category) {
         if (!StringUtils.hasText(category.getCategoryCode())) {
-            category.setCategoryCode(EntityDisplayUtils.buildReadableCode("CAT", category.getName(), category.getId()));
+            long nextNumber = 1;
+            String code;
+            do {
+                code = String.format("CAT-%05d", nextNumber);
+                nextNumber++;
+            } while (categoryRepository.findByCategoryCodeIgnoreCase(code).isPresent());
+            category.setCategoryCode(code);
         }
         return categoryRepository.save(category);
     }

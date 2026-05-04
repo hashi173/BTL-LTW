@@ -86,6 +86,22 @@ public class OrderService {
     public void updateOrderStatus(java.util.UUID orderId, OrderStatus status) {
         Order order = getOrderById(orderId);
         if (order != null) {
+            OrderStatus current = order.getStatus();
+            // Don't allow changes to finalized orders
+            if (current == OrderStatus.COMPLETED || current == OrderStatus.CANCELLED) {
+                return;
+            }
+            // Allow CANCEL from any active status
+            if (status == OrderStatus.CANCELLED) {
+                order.setStatus(status);
+                order.setOrderStatus(status.name());
+                orderRepository.save(order);
+                return;
+            }
+            // Only allow forward progression (higher ordinal)
+            if (status.ordinal() < current.ordinal()) {
+                return;
+            }
             order.setStatus(status);
             order.setOrderStatus(status.name());
             orderRepository.save(order);
@@ -115,10 +131,11 @@ public class OrderService {
     }
 
     private String generateTrackingCode() {
+        long nextNumber = orderRepository.count() + 1;
         String trackingCode;
         do {
-            String uuid = java.util.UUID.randomUUID().toString().replace("-", "").toUpperCase();
-            trackingCode = "ORD-" + uuid.substring(0, 6);
+            trackingCode = String.format("ORD-%06d", nextNumber);
+            nextNumber++;
         } while (orderRepository.findByTrackingCode(trackingCode).isPresent());
         return trackingCode;
     }

@@ -78,7 +78,17 @@
                                 </td>
                                 <td>
                                     <a th:href="@{/admin/products/edit/{id}(id=${p.id})}"
-                                        class="btn btn-sm btn-info text-white"><i class="fas fa-edit"></i></a>
+                                        class="btn btn-sm btn-info text-white" title="Edit"><i class="fas fa-edit"></i></a>
+                                    <a th:if="${p.available}" th:href="@{/admin/products/deactivate/{id}(id=${p.id})}"
+                                        class="btn btn-sm btn-warning text-dark" title="Deactivate"><i
+                                            class="fas fa-ban"></i></a>
+                                    <a th:unless="${p.available}" th:href="@{/admin/products/activate/{id}(id=${p.id})}"
+                                        class="btn btn-sm btn-success" title="Reactivate"><i
+                                            class="fas fa-check"></i></a>
+                                    <a th:href="@{/admin/products/delete/{id}(id=${p.id})}"
+                                        class="btn btn-sm btn-danger"
+                                        onclick="return confirm('Delete this product permanently?')"
+                                        title="Delete"><i class="fas fa-trash"></i></a>
                                 </td>
                             </tr>
                         </tbody>

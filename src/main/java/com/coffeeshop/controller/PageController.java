@@ -67,7 +67,12 @@ public class PageController {
                 application.setCvUrl("/uploads/cv/" + fileName);
             }
 
-            String trackingCode = "CV-" + java.util.UUID.randomUUID().toString().substring(0, 8).toUpperCase();
+            long nextCvNumber = jobApplicationRepository.count() + 1;
+            String trackingCode;
+            do {
+                trackingCode = String.format("CV-%06d", nextCvNumber);
+                nextCvNumber++;
+            } while (jobApplicationRepository.findByTrackingCode(trackingCode).isPresent());
             application.setTrackingCode(trackingCode);
 
             jobApplicationRepository.save(application);
@@ -83,11 +88,4 @@ public class PageController {
         return "redirect:/#careers";
     }
 
-    @org.springframework.web.bind.annotation.PostMapping("/contact")
-    public String contact(org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes,
-            java.util.Locale locale) {
-        redirectAttributes.addFlashAttribute("success",
-                messageSource.getMessage("contact.success", null, locale));
-        return "redirect:/#info";
-    }
 }

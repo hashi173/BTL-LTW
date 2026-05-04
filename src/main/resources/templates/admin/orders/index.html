@@ -71,7 +71,14 @@
                                     th:text="${#numbers.formatDecimal(order.totalAmount, 0, 'COMMA', 0, 'POINT')} + ' VND'">
                                     0 VND
                                 </td>
-                                <td><span class="badge" th:text="${order.status}">PENDING</span></td>
+                                <td>
+                                    <span class="badge rounded-pill px-3 py-2"
+                                        th:classappend="${order.status.name() == 'PENDING' ? 'bg-warning text-dark' :
+                                            (order.status.name() == 'CONFIRMED' ? 'bg-info text-dark' :
+                                            (order.status.name() == 'SHIPPING' ? 'bg-primary' :
+                                            (order.status.name() == 'COMPLETED' ? 'bg-success' : 'bg-danger')))}"
+                                        th:text="${order.status}">PENDING</span>
+                                </td>
                                 <td th:text="${#temporals.format(order.createdAt, 'dd-MM-yyyy HH:mm')}">Date</td>
                                 <td class="text-end">
                                     <div class="d-flex justify-content-end gap-2">

@@ -50,6 +50,7 @@
                     <table class="table table-hover mb-0 align-middle">
                         <thead class="bg-light">
                             <tr>
+                                <th>Code</th>
                                 <th>Applicant</th>
                                 <th>Position</th>
                                 <th>Contact</th>
@@ -60,6 +61,7 @@
                         </thead>
                         <tbody>
                             <tr th:each="app : ${applications}">
+                                <td class="fw-bold text-primary" th:text="${app.trackingCode}">CV-XXXX</td>
                                 <td>
                                     <div class="fw-bold" th:text="${app.fullName}">Name</div>
                                     <div class="small">
@@ -114,7 +116,7 @@
                                 </td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(applications)}">
-                                <td colspan="6" class="text-center py-4 text-muted">No applications found.</td>
+                                <td colspan="7" class="text-center py-4 text-muted">No applications found.</td>
                             </tr>
                         </tbody>
                     </table>

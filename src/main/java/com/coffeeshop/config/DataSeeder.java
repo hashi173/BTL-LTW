@@ -3,7 +3,7 @@ package com.coffeeshop.config;
 import com.coffeeshop.entity.JobPosting;
 import com.coffeeshop.entity.Role;
 import com.coffeeshop.repository.CategoryRepository;
-import com.coffeeshop.repository.ExpenseRepository;
+
 import com.coffeeshop.repository.JobPostingRepository;
 import com.coffeeshop.repository.OrderItemRepository;
 import com.coffeeshop.repository.OrderRepository;
@@ -28,12 +28,13 @@ import java.math.BigDecimal;
 public class DataSeeder implements CommandLineRunner {
 
         private final JobPostingRepository jobPostingRepository;
+        private final com.coffeeshop.repository.JobApplicationRepository jobApplicationRepository;
         private final CategoryRepository categoryRepository;
         private final ProductRepository productRepository;
         private final ProductSizeRepository productSizeRepository;
         private final OrderRepository orderRepository;
         private final OrderItemRepository orderItemRepository;
-        private final ExpenseRepository expenseRepository;
+
         private final UserRepository userRepository;
         private final PasswordEncoder passwordEncoder;
         private final CacheManager cacheManager;
@@ -65,7 +66,9 @@ public class DataSeeder implements CommandLineRunner {
                 try {
                         orderItemRepository.deleteAll();
                         orderRepository.deleteAll();
-                        expenseRepository.deleteAll();
+
+                        jobApplicationRepository.deleteAll();
+                        jobPostingRepository.deleteAll();
                         userRepository.deleteAll();
                         productSizeRepository.deleteAll();
                         productRepository.deleteAll();
@@ -133,13 +136,7 @@ public class DataSeeder implements CommandLineRunner {
                                                 sequence);
                         }
 
-                        seedExpense(period, "Utilities", "Utilities " + month + "/" + year,
-                                        1_200_000.0 + (9 - offset) * 45_000, 5);
-                        seedExpense(period, "Ingredients", "Ingredients Supply " + month + "/" + year,
-                                        2_800_000.0 + (9 - offset) * 150_000, 10);
-                        seedExpense(period, "Rent", "Shop Rent " + month + "/" + year, 5_000_000.0, 1);
-                        seedExpense(period, "Payroll", "Payroll " + month + "/" + year,
-                                        1_800_000.0 + activeUsers.size() * 180_000, 25);
+
 
                         log.info("Seeded {} history orders for {}/{}", ordersCount, month, year);
                 }
@@ -156,7 +153,7 @@ public class DataSeeder implements CommandLineRunner {
                 com.coffeeshop.entity.Order order = new com.coffeeshop.entity.Order();
                 order.setUser(user);
                 order.setCustomerName("History Customer " + month + "-" + sequence);
-                order.setOrderType(sequence % 2 == 0 ? "In-Store Order" : "Takeaway");
+                order.setOrderType(sequence % 2 == 0 ? "Delivery" : "Takeaway");
                 order.setStatus(com.coffeeshop.entity.OrderStatus.COMPLETED);
                 order.setOrderStatus(com.coffeeshop.entity.OrderStatus.COMPLETED.name());
                 order.setCreatedAt(createdAt);
@@ -195,14 +192,7 @@ public class DataSeeder implements CommandLineRunner {
                 }
         }
 
-        private void seedExpense(java.time.YearMonth period, String category, String description, double amount, int day) {
-                com.coffeeshop.entity.Expense expense = new com.coffeeshop.entity.Expense();
-                expense.setDescription(description);
-                expense.setAmount(amount);
-                expense.setCategory(category);
-                expense.setExpenseDate(period.atDay(Math.min(day, period.lengthOfMonth())));
-                expenseRepository.save(expense);
-        }
+
 
         private void seedActiveData() {
                 java.time.LocalDateTime now = java.time.LocalDateTime.now();
@@ -214,7 +204,7 @@ public class DataSeeder implements CommandLineRunner {
                         com.coffeeshop.entity.Order order = new com.coffeeshop.entity.Order();
                         order.setUser(adminUser);
                         order.setCustomerName("Active Customer " + (i + 1));
-                        order.setOrderType("In-Store Order");
+                        order.setOrderType("Delivery");
 
                         com.coffeeshop.entity.OrderStatus status = (i % 2 == 0)
                                         ? com.coffeeshop.entity.OrderStatus.PENDING
@@ -264,6 +254,7 @@ public class DataSeeder implements CommandLineRunner {
                 job1.setDescription(
                                 "Seeking a passionate coffee expert to lead our morning shift. You will be responsible for quality control and training junior staff.");
                 job1.setRequirements("3+ years experience in specialty coffee, Latte Art mastery, leadership skills.");
+                job1.setJobCode("JOB-000001");
                 job1.setActive(true);
 
                 JobPosting job2 = new JobPosting();
@@ -273,6 +264,7 @@ public class DataSeeder implements CommandLineRunner {
                 job2.setDescription(
                                 "Oversee daily operations, manage inventory, and ensure the highest level of customer satisfaction.");
                 job2.setRequirements("Management experience in F&B, strong communication, problem-solving skills.");
+                job2.setJobCode("JOB-000002");
                 job2.setActive(true);
 
                 JobPosting job3 = new JobPosting();
@@ -282,6 +274,7 @@ public class DataSeeder implements CommandLineRunner {
                 job3.setDescription(
                                 "Create a welcoming atmosphere for our guests. Responsible for greeting, serving, and handling customer feedback.");
                 job3.setRequirements("Friendly personality, energetic, good English communication is a plus.");
+                job3.setJobCode("JOB-000003");
                 job3.setActive(true);
 
                 jobPostingRepository.save(job1);

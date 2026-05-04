@@ -42,6 +42,6 @@ public class JobApplication extends BaseEntity {
     private ApplicationStatus status = ApplicationStatus.NEW;
 
     public enum ApplicationStatus {
-        NEW, REVIEWED, INTERVIEWING, REJECTED, HIRED
+        NEW, REVIEWED, REJECTED, HIRED
     }
 }

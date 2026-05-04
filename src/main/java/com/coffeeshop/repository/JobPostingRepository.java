@@ -22,4 +22,6 @@ public interface JobPostingRepository extends JpaRepository<JobPosting, java.uti
 
         org.springframework.data.domain.Page<JobPosting> findByIsActive(boolean isActive,
                         org.springframework.data.domain.Pageable pageable);
+
+        java.util.Optional<JobPosting> findByJobCode(String jobCode);
 }

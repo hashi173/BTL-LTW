@@ -25,7 +25,7 @@ public class HomeController {
         request.getSession(true); // ensure session exists for CSRF token
         model.addAttribute("products", productService.getAllProducts());
         model.addAttribute("categories", categoryService.getAllCategories());
-        model.addAttribute("jobs", jobPostingRepository.findTop3ByIsActiveTrueOrderByCreatedAtDesc());
+        model.addAttribute("jobs", jobPostingRepository.findByIsActiveTrueOrderByCreatedAtDesc());
         return "home";
     }
 

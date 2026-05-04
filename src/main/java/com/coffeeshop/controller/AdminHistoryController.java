@@ -2,9 +2,7 @@ package com.coffeeshop.controller;
 
 import com.coffeeshop.entity.Order;
 import com.coffeeshop.entity.OrderStatus;
-import com.coffeeshop.entity.Expense;
 import com.coffeeshop.entity.Product;
-import com.coffeeshop.repository.ExpenseRepository;
 import com.coffeeshop.repository.OrderRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +20,7 @@ import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.Collectors;
 
-/** Admin financial history — monthly revenue, expenses, and profit with Chart.js visualization. */
+/** Admin financial history — monthly revenue with Chart.js visualization. */
 @Slf4j
 @Controller
 @RequestMapping("/admin/history")
@@ -30,7 +28,6 @@ import java.util.stream.Collectors;
 public class AdminHistoryController {
 
     private final OrderRepository orderRepository;
-    private final ExpenseRepository expenseRepository;
 
     @GetMapping
     public String history(
@@ -50,17 +47,6 @@ public class AdminHistoryController {
                 String key = year + "-" + month;
                 statsMap.putIfAbsent(key, new MonthlyStats(year, month));
                 statsMap.get(key).setRevenue(total);
-            }
-
-            // Aggregate monthly expenses
-            List<Object[]> expenseData = expenseRepository.findMonthlyExpenses();
-            for (Object[] row : expenseData) {
-                int year = ((Number) row[0]).intValue();
-                int month = ((Number) row[1]).intValue();
-                double total = ((Number) row[2]).doubleValue();
-                String key = year + "-" + month;
-                statsMap.putIfAbsent(key, new MonthlyStats(year, month));
-                statsMap.get(key).setExpenses(total);
             }
 
             for (MonthlyStats stat : statsMap.values()) {
@@ -121,27 +107,21 @@ public class AdminHistoryController {
         // Chart data — last 12 months in chronological order
         List<String> labels = new ArrayList<>();
         List<Double> revenues = new ArrayList<>();
-        List<Double> expenses = new ArrayList<>();
-        List<Double> profits = new ArrayList<>();
 
         int chartLimit = Math.min(monthlyStats.size(), 12);
         for (int i = chartLimit - 1; i >= 0; i--) {
             MonthlyStats stat = monthlyStats.get(i);
             labels.add(stat.getMonthShortLabel());
             revenues.add(stat.revenue);
-            expenses.add(stat.expenses);
-            profits.add(stat.revenue - stat.expenses);
         }
 
         model.addAttribute("chartLabels", labels);
         model.addAttribute("chartRevenues", revenues);
-        model.addAttribute("chartExpenses", expenses);
-        model.addAttribute("chartProfits", profits);
 
         return "admin/history";
     }
 
-    /** Shows detailed orders and expenses for a specific month with pagination. */
+    /** Shows detailed orders for a specific month with pagination. */
     @GetMapping("/details")
     public String details(
             @RequestParam int month,
@@ -158,15 +138,11 @@ public class AdminHistoryController {
         Page<Order> ordersPage = orderRepository.findAllByStatusAndCreatedAtBetween(
                 OrderStatus.COMPLETED, start, end, pageable);
 
-        List<Expense> expenseList = expenseRepository.findByExpenseDateBetween(
-                yearMonth.atDay(1), yearMonth.atEndOfMonth());
-
         // Compute full-month totals (not just current page)
         List<Order> allOrdersForSum = orderRepository.findAllByStatusAndCreatedAtBetween(
                 OrderStatus.COMPLETED, start, end);
         double revenueSum = allOrdersForSum.stream()
                 .mapToDouble(o -> o.getTotalAmount() != null ? o.getTotalAmount() : 0.0).sum();
-        double totalExpenses = expenseList.stream().mapToDouble(Expense::getAmount).sum();
 
         model.addAttribute("month", month);
         model.addAttribute("year", year);
@@ -179,10 +155,7 @@ public class AdminHistoryController {
         model.addAttribute("totalPages", ordersPage.getTotalPages());
         model.addAttribute("totalItems", ordersPage.getTotalElements());
 
-        model.addAttribute("expenses", expenseList);
         model.addAttribute("totalRevenue", revenueSum);
-        model.addAttribute("totalExpenses", totalExpenses);
-        model.addAttribute("netProfit", revenueSum - totalExpenses);
 
         return "admin/history_details";
     }
@@ -193,7 +166,6 @@ public class AdminHistoryController {
         private int year;
         private int month;
         private double revenue = 0.0;
-        private double expenses = 0.0;
         private String topProductName = "No sales";
         private long topProductQuantity = 0;
         private String topProductImage = "/images/no-image.png";
@@ -202,8 +174,6 @@ public class AdminHistoryController {
             this.year = year;
             this.month = month;
         }
-
-        public double getNetProfit() { return revenue - expenses; }
 
         public String getMonthName() {
             return Month.of(month).getDisplayName(TextStyle.FULL, Locale.ENGLISH);

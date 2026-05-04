@@ -62,47 +62,12 @@
 
                 <!-- Map/Form Column -->
                 <div class="col-lg-7">
-                    <div th:if="${success}" class="alert alert-success rounded-3 mb-4 shadow-sm" role="alert">
-                        <i class="fas fa-check-circle me-2"></i> <span th:text="#{contact.success}">Message sent
-                            successfully! We will get back to you soon.</span>
-                    </div>
-
                     <div class="card border-0 shadow-lg rounded-4 overflow-hidden h-100">
                         <!-- Google Maps Embed -->
-                        <div class="bg-light" style="height: 300px;">
+                        <div class="bg-light" style="height: 100%;">
                             <iframe
                                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.4241686469647!2d106.69842531535616!3d10.778786262100877!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f385570472f%3A0x1787491df961e0f1!2sIndependence%20Palace!5e0!3m2!1sen!2s!4v1645431682703!5m2!1sen!2s"
-                                width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
-                        </div>
-                        <div class="card-body p-4 p-lg-5">
-                            <h3 class="fw-bold mb-3" th:text="#{info.message}">Send us a message</h3>
-                            <form th:action="@{/contact}" method="post">
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <input type="text" name="name" class="form-control"
-                                            th:placeholder="#{info.name}" placeholder="Your Name" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <input type="email" name="email" class="form-control" placeholder="Your Email"
-                                            required pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
-                                            title="Enter a valid email (e.g., user@example.com)">
-                                    </div>
-                                    <div class="col-12">
-                                        <input type="text" name="subject" class="form-control"
-                                            th:placeholder="#{info.subject}" placeholder="Subject" required>
-                                    </div>
-                                    <div class="col-12">
-                                        <textarea name="message" class="form-control" rows="4"
-                                            th:placeholder="#{info.message.placeholder}" placeholder="How can we help?"
-                                            required></textarea>
-                                    </div>
-                                    <div class="col-12">
-                                        <button type="submit" class="btn btn-primary rounded-pill px-5 fw-bold"
-                                            th:text="#{info.send}">Send
-                                            Message</button>
-                                    </div>
-                                </div>
-                            </form>
+                                width="100%" height="100%" style="border:0; min-height: 500px;" allowfullscreen="" loading="lazy"></iframe>
                         </div>
                     </div>
                 </div>

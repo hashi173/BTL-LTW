@@ -73,7 +73,13 @@ public class ProductService {
     @org.springframework.cache.annotation.CacheEvict(value = "products", allEntries = true)
     public Product saveProduct(@org.springframework.lang.NonNull Product product) {
         if (!StringUtils.hasText(product.getProductCode())) {
-            product.setProductCode(EntityDisplayUtils.buildReadableCode("PRD", product.getName(), product.getId()));
+            long nextNumber = 1;
+            String code;
+            do {
+                code = String.format("PRD-%05d", nextNumber);
+                nextNumber++;
+            } while (productRepository.findByProductCodeIgnoreCase(code).isPresent());
+            product.setProductCode(code);
         }
         if (product.getSizes() != null) {
             for (ProductSize size : product.getSizes()) {

@@ -1,10 +1,11 @@
 package com.coffeeshop.config;
 
 import com.coffeeshop.entity.Category;
+import com.coffeeshop.entity.JobPosting;
 import com.coffeeshop.entity.Product;
 import com.coffeeshop.repository.CategoryRepository;
+import com.coffeeshop.repository.JobPostingRepository;
 import com.coffeeshop.repository.ProductRepository;
-import com.coffeeshop.util.EntityDisplayUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.Ordered;
@@ -23,22 +24,29 @@ public class CatalogMetadataBackfillRunner implements CommandLineRunner {
 
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
+    private final JobPostingRepository jobPostingRepository;
 
     @Override
     @Transactional
     public void run(String... args) {
         backfillCategoryCodes();
         backfillProductCodes();
+        backfillJobCodes();
     }
 
     private void backfillCategoryCodes() {
+        long counter = 0;
         List<Category> updates = new ArrayList<>();
         for (Category category : categoryRepository.findAll()) {
             if (!StringUtils.hasText(category.getCategoryCode())) {
-                category.setCategoryCode(EntityDisplayUtils.buildReadableCode(
-                        "CAT",
-                        category.getName(),
-                        category.getId()));
+                counter++;
+                String code;
+                long num = counter;
+                do {
+                    code = String.format("CAT-%05d", num);
+                    num++;
+                } while (categoryRepository.findByCategoryCodeIgnoreCase(code).isPresent());
+                category.setCategoryCode(code);
                 updates.add(category);
             }
         }
@@ -49,19 +57,46 @@ public class CatalogMetadataBackfillRunner implements CommandLineRunner {
     }
 
     private void backfillProductCodes() {
+        long counter = 0;
         List<Product> updates = new ArrayList<>();
         for (Product product : productRepository.findAll()) {
             if (!StringUtils.hasText(product.getProductCode())) {
-                product.setProductCode(EntityDisplayUtils.buildReadableCode(
-                        "PRD",
-                        product.getName(),
-                        product.getId()));
+                counter++;
+                String code;
+                long num = counter;
+                do {
+                    code = String.format("PRD-%05d", num);
+                    num++;
+                } while (productRepository.findByProductCodeIgnoreCase(code).isPresent());
+                product.setProductCode(code);
                 updates.add(product);
             }
         }
 
         if (!updates.isEmpty()) {
             productRepository.saveAll(updates);
+        }
+    }
+
+    private void backfillJobCodes() {
+        long counter = 0;
+        List<JobPosting> updates = new ArrayList<>();
+        for (JobPosting job : jobPostingRepository.findAll()) {
+            if (!StringUtils.hasText(job.getJobCode())) {
+                counter++;
+                String code;
+                long num = counter;
+                do {
+                    code = String.format("JOB-%06d", num);
+                    num++;
+                } while (jobPostingRepository.findByJobCode(code).isPresent());
+                job.setJobCode(code);
+                updates.add(job);
+            }
+        }
+
+        if (!updates.isEmpty()) {
+            jobPostingRepository.saveAll(updates);
         }
     }
 }

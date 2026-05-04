@@ -1,6 +1,5 @@
 package com.coffeeshop.controller;
 
-import com.coffeeshop.repository.ExpenseRepository;
 import com.coffeeshop.entity.Product;
 import com.coffeeshop.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +14,7 @@ import java.util.List;
 
 /**
  * Admin dashboard controller.
- * Aggregates KPIs (revenue, orders, expenses, payroll) and chart data
+ * Aggregates KPIs (revenue, orders) and chart data
  * for the main admin overview page.
  */
 @Controller
@@ -24,7 +23,6 @@ import java.util.List;
 public class AdminController {
 
     private final OrderService orderService;
-    private final ExpenseRepository expenseRepository;
 
     /** Renders the admin dashboard with KPI cards and Chart.js data. */
     @GetMapping("/dashboard")
@@ -34,15 +32,9 @@ public class AdminController {
         long pendingOrders = orderService.countPendingOrders();
         double totalRevenue = orderService.calculateTotalRevenue();
 
-        Double expenses = expenseRepository.sumTotalExpenses();
-        double totalExpenses = expenses != null ? expenses : 0.0;
-        double netProfit = totalRevenue - totalExpenses;
-
         model.addAttribute("totalOrders", totalOrders);
         model.addAttribute("pendingOrders", pendingOrders);
         model.addAttribute("totalRevenue", totalRevenue);
-        model.addAttribute("totalExpenses", totalExpenses);
-        model.addAttribute("netProfit", netProfit);
 
         // --- Revenue Chart Data (reversed to chronological ASC) ---
         List<Object[]> revenueData = orderService.getMonthlyRevenue();

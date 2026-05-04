@@ -30,5 +30,8 @@ public class JobPosting extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String requirements;
 
+    @Column(unique = true, length = 20)
+    private String jobCode;
+
     private boolean isActive = true;
 }

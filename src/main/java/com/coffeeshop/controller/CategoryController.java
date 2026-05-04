@@ -23,7 +23,7 @@ public class CategoryController {
 
         int pageSize = 10;
         org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page,
-                pageSize, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.ASC, "id"));
+                pageSize, org.springframework.data.domain.Sort.by(org.springframework.data.domain.Sort.Direction.DESC, "createdAt"));
         org.springframework.data.domain.Page<Category> categoryPage;
 
         if (search != null && !search.isEmpty()) {
