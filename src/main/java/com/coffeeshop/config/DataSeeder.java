@@ -290,23 +290,17 @@ public class DataSeeder implements CommandLineRunner {
                 com.coffeeshop.entity.Category juice = createDetailsCategory("Juice", "Fresh pressed fruits");
 
                 createProduct("Cafe Latte", "Creamy espresso with steamed milk.",
-                                "milk,espresso,coffee,latte,sweet,hot", "/images/products/CaffeLatte.png", coffee,
-                                55000.0);
+                                "/images/products/CaffeLatte.png", coffee, 55000.0);
                 createProduct("Espresso", "Intense double-shot espresso.",
-                                "espresso,coffee,strong,bitter,black,bold,shot,hot", "/images/products/Espresso.png",
-                                coffee, 45000.0);
+                                "/images/products/Espresso.png", coffee, 45000.0);
                 createProduct("Peach Tea", "Refreshing peach tea with fresh peach slices.",
-                                "tea,peach,fruit,refreshing,iced,cold,sweet", "/images/products/PeachTea.png", tea,
-                                55000.0);
+                                "/images/products/PeachTea.png", tea, 55000.0);
                 createProduct("Sakura Blossom Tea", "Delicate cherry blossom infused tea.",
-                                "tea,sakura,cherry blossom,floral,light,elegant,hot",
                                 "/images/products/SakuraBlossomTea.png", tea, 58000.0);
                 createProduct("Strawberry Smoothie", "Thick strawberry smoothie blended with fresh milk.",
-                                "smoothie,strawberry,milk,cream,sweet,cold,ice,fruit",
                                 "/images/products/StrawberrySmoothie.png", smoothie, 60000.0);
                 createProduct("Coconut Juice", "Fresh young coconut water with coconut jelly.",
-                                "coconut,juice,fresh,natural,cold,ice,healthy", "/images/products/CoconutJuice.png",
-                                juice, 50000.0);
+                                "/images/products/CoconutJuice.png", juice, 50000.0);
                 log.info("Products seeded.");
         }
 
@@ -320,14 +314,13 @@ public class DataSeeder implements CommandLineRunner {
         }
 
         private void createProduct(String name, String description,
-                        String tags, String imageUrl, com.coffeeshop.entity.Category category, Double basePrice) {
+                        String imageUrl, com.coffeeshop.entity.Category category, Double basePrice) {
                 com.coffeeshop.entity.Product product = productRepository.findAll().stream()
                                 .filter(existingProduct -> existingProduct.getName().equalsIgnoreCase(name))
                                 .findFirst()
                                 .orElse(new com.coffeeshop.entity.Product());
                 product.setName(name);
                 product.setDescription(description);
-                product.setTags(tags);
                 product.setImage(imageUrl);
                 product.setCategory(category);
                 product.setProductCode(String.format("PRD-%05d", ++productCounter));

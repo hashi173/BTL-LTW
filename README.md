@@ -64,7 +64,7 @@ A full-stack coffee shop management platform built with **Java 17 / Spring Boot 
 - Java 17+
 
 ### 1. Run Everything via Docker Compose
-The project includes a `docker-compose.yml` to spin up PostgreSQL 15, pgAdmin 4, and the Spring Boot application (Backend + Frontend) all at once.
+The project includes a `docker-compose.yml` to spin up PostgreSQL 15, pgAdmin 4, and the Spring Boot application (Backend + Frontend) all at once. See the full [Docker Guide](docs/DOCKER_GUIDE.md) for details.
 ```bash
 docker compose up -d --build
 ```
@@ -75,8 +75,7 @@ We have prepared a complete SQL script featuring Triggers, Stored Procedures, an
 2. The web application will be available at `http://localhost:8080`.
 3. Access the database via pgAdmin (`http://localhost:5050`) or `psql`.
 4. If you want the PostgreSQL course/demo scripts, load `schema-advanced.sql` manually after the app has created its tables. Load `seed-data.sql` only for the DBMS demo flow, not together with the `dev` profile seed.
-5. Follow the detailed steps in the [db_demo_script.md](db_demo_script.md) file to showcase Triggers, Stored Procedures, and Transactions to your instructor.
-6. Seeding behavior is summarized in [docs/SEEDING.md](docs/SEEDING.md).
+5. Follow the detailed steps in the [db_demo_script.md](docs/DMBS/db_demo_script.md) file to showcase Triggers, Stored Procedures, and Transactions to your instructor.
 
 ---
 
@@ -96,7 +95,7 @@ We have prepared a complete SQL script featuring Triggers, Stored Procedures, an
 
 ```
 src/main/java/com/coffeeshop/
-  config/       -- Security, data seeding, MVC, Redis configuration
+  config/       -- Security, data seeding, MVC, Redis, metadata backfill
   controller/   -- MVC controllers (14 controllers)
   dto/          -- Data transfer objects for cart and requests
   entity/       -- JPA entities (UUID based)
@@ -120,7 +119,10 @@ Detailed documentation is available in the `/docs` directory:
 - [API Reference](docs/LTW/api_reference.md)
 - [Postman Guide](docs/LTW/postman_guide.md)
 - [Deployment Guide](docs/DEPLOYMENT.md)
-- [Database Schema](docs/DMBS/schema.md)
+- [Docker Guide](docs/DOCKER_GUIDE.md)
+- [Database Schema](docs/LTW/database.md)
+- [Project Structure](docs/LTW/project_structure.md)
+- [Defense Script](docs/LTW/defense_script.md)
 
 ---
 

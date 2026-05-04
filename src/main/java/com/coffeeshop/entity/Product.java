@@ -12,8 +12,6 @@ import java.util.List;
 /**
  * Product entity representing a menu item (beverage or food).
  * Prices are determined by {@link ProductSize}, not stored directly on Product.
- * The {@code tags} field provides comma-separated keywords for AI semantic search
- * (e.g., "milk,sữa,cream,sweet" enables matching when a user types "sữa").
  */
 @Entity
 @Table(name = "products")
@@ -48,9 +46,6 @@ public class Product extends BaseEntity {
     private String description;
 
 
-    /** Comma-separated search keywords for AI recommendation matching (EN + VI). */
-    @Column(columnDefinition = "TEXT")
-    private String tags;
 
     @Column(length = 500)
     private String image;

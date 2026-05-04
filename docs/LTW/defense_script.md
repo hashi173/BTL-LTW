@@ -102,7 +102,7 @@
 
 **Q: ProductCode được tạo ra như thế nào?**
 > `DataSeeder` dùng counter tăng dần: `PRD-00001`, `PRD-00002`, ...
-> Với sản phẩm mới tạo qua UI, `ProductService.saveProduct()` gọi `EntityDisplayUtils.buildReadableCode("PRD", name, id)` để tạo code từ tên + UUID.
+> Với sản phẩm mới tạo qua UI, `CatalogMetadataBackfillRunner` tự động gán `displayCode` tuần tự cho bất kỳ entity nào chưa có code (products, categories, jobs).
 
 **Q: Tại sao cần Redis cache cho categories?**
 > Menu phía customer gọi `getAllCategories()` ở mọi request. Cache giúp tránh query DB lặp đi lặp lại.
@@ -132,18 +132,13 @@
 > Badge màu: PENDING/CONFIRMED/SHIPPING = xanh, COMPLETED = xanh lá, CANCELLED = đỏ.
 
 **Q: History tài chính được tính như thế nào?**
-> `AdminHistoryController` query `OrderRepository` và `ExpenseRepository` theo tháng/năm.
+> `AdminHistoryController` query `OrderRepository` theo tháng/năm.
 > Revenue = tổng `total_amount` của đơn COMPLETED trong tháng.
-> Net Profit = Revenue - Expenses.
 > Dữ liệu trả về Chart.js vẽ line chart 10 tháng gần nhất.
 
 ---
 
-## 📦 Câu hỏi cho Quỳnh — Expenses, Recruitment, Auth
-
-**Q: Chi phí (Expense) được phân loại thế nào?**
-> `Expense` có trường `category` (String): Utilities, Ingredients, Rent, Payroll, Other.
-> Admin tự nhập khi log expense. Không có bảng category riêng cho expense.
+## 📦 Câu hỏi cho Quỳnh — Recruitment, Auth
 
 **Q: Job Application tracking code khác Order tracking code không?**
 > Có. Order: `ORD-XXXXXX`. Job application: `CV-XXXXXXXX` (8 ký tự).
@@ -175,10 +170,11 @@
 > Kết quả dùng cho Chart.js trên dashboard và history.
 
 **Q: DataSeeder làm gì khi app khởi động?**
-> Xóa sạch theo thứ tự FK-safe: `order_items → orders → expenses → users → product_sizes → products → categories`.
-> Seed lại toàn bộ với ID chuẩn (`CAT-00001`, `PRD-00001`, `ORD-000001`).
-> Evict toàn bộ Redis cache sau khi seed xong.
+> Xóa sạch theo thứ tự FK-safe: `order_items → orders → job_applications → job_postings → users → product_sizes → products → categories`.
+> Seed lại toàn bộ với ID chuẩn (`CAT-00001`, `PRD-00001`, `ORD-000001`, `JOB-000001`).
+> `CatalogMetadataBackfillRunner` chạy sau seeder, gán `displayCode` tuần tự cho bất kỳ entity nào thiếu code.
+> Evict toàn bộ Redis cache sau khi seed xong để tránh dữ liệu stale.
 
 **Q: Tại sao dùng UUID thay vì auto-increment?**
 > UUID globally unique, tránh sequential ID guessing (bảo mật hơn khi ID xuất hiện trong URL).
-> Tuy nhiên để dễ nhìn, mỗi entity có thêm `displayCode` (`ORD-000001`, `PRD-00001`...) dùng để hiển thị.
+> Tuy nhiên để dễ nhìn, mỗi entity có thêm `displayCode` (`ORD-000001`, `PRD-00001`, `JOB-000001`...) dùng để hiển thị.

@@ -317,41 +317,6 @@ SELECT * FROM get_top_products(3);
 
 ---
 
-### C3. "Viết procedure tính lương nhân viên theo ca làm"
-
-```sql
-CREATE OR REPLACE FUNCTION calculate_employee_payroll(
-    p_from_date DATE,
-    p_to_date DATE
-)
-RETURNS TABLE (
-    employee_name VARCHAR,
-    total_hours NUMERIC(6,2),
-    hourly_rate NUMERIC(10,2),
-    total_pay NUMERIC(12,2)
-) AS $$
-BEGIN
-    RETURN QUERY
-    SELECT
-        u.full_name::VARCHAR                                   AS employee_name,
-        SUM(
-            EXTRACT(EPOCH FROM (ws.end_time - ws.start_time)) / 3600
-        )::NUMERIC(6,2)                                        AS total_hours,
-        ws.hourly_rate                                         AS hourly_rate,
-        (SUM(
-            EXTRACT(EPOCH FROM (ws.end_time - ws.start_time)) / 3600
-        ) * ws.hourly_rate)::NUMERIC(12,2)                     AS total_pay
-    FROM work_shifts ws
-    JOIN users u ON u.id = ws.user_id
-    WHERE DATE(ws.start_time) BETWEEN p_from_date AND p_to_date
-      AND ws.end_time IS NOT NULL
-    GROUP BY u.full_name, ws.hourly_rate
-    ORDER BY total_pay DESC;
-END;
-$$ LANGUAGE plpgsql;
-```
-
----
 
 ### C4. "Sự khác nhau giữa FUNCTION và PROCEDURE trong PostgreSQL?"
 

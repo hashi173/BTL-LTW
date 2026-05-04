@@ -14,7 +14,7 @@
 |--------|---------|--------|
 | **Phan** | Products, Categories, Toppings, Dashboard | 17 |
 | **Hà** | Orders, Cart, Checkout, Tracking, Invoice, History | 16 |
-| **Quỳnh** | Expenses, Recruitment (Applications + Jobs), Auth | 14 |
+| **Quỳnh** | Recruitment (Applications + Jobs), Auth | 11 |
 
 > **Lưu ý:** Ingredients và Work Shifts đã được loại bỏ khỏi scope ứng dụng (không có controller/UI tương ứng).
 
@@ -118,41 +118,33 @@
 
 ---
 
-## 🧾 Quỳnh — Expenses, Recruitment, Auth & Pages
-
-### Expenses (Admin)
-
-| # | Method | URL | Auth | Description |
-|---|--------|-----|------|-------------|
-| 36 | GET | `/admin/expenses` | ADMIN | Danh sách chi phí (phân trang, tìm kiếm) |
-| 37 | POST | `/admin/expenses/save` | ADMIN | Tạo hoặc cập nhật khoản chi phí |
-| 38 | GET | `/admin/expenses/delete/{id}` | ADMIN | Xóa khoản chi phí |
+## 🧾 Quỳnh — Recruitment, Auth & Pages
 
 ### Recruitment — Applications (Admin)
 
 | # | Method | URL | Auth | Description |
 |---|--------|-----|------|-------------|
-| 39 | GET | `/admin/recruitment` | ADMIN | Danh sách đơn ứng tuyển (phân trang, tìm kiếm) |
-| 40 | POST | `/admin/recruitment/{id}/status` | ADMIN | Cập nhật trạng thái đơn (NEW → REVIEWED → INTERVIEWING → HIRED/REJECTED) |
-| 41 | POST | `/careers/apply` | Public | Nộp đơn ứng tuyển (fullName, email, phone, position, cvFile PDF) |
+| 36 | GET | `/admin/recruitment` | ADMIN | Danh sách đơn ứng tuyển (phân trang, tìm kiếm) |
+| 37 | POST | `/admin/recruitment/{id}/status` | ADMIN | Cập nhật trạng thái đơn (NEW → REVIEWED → INTERVIEWING → HIRED/REJECTED) |
+| 38 | POST | `/careers/apply` | Public | Nộp đơn ứng tuyển (fullName, email, phone, position, cvFile PDF) |
 
 ### Recruitment — Job Postings (Admin)
 
 | # | Method | URL | Auth | Description |
 |---|--------|-----|------|-------------|
-| 42 | GET | `/admin/recruitment/jobs` | ADMIN | Danh sách tin tuyển dụng (active/closed, phân trang) |
-| 43 | POST | `/admin/recruitment/jobs/save` | ADMIN | Tạo hoặc cập nhật tin tuyển dụng |
-| 44 | GET | `/admin/recruitment/jobs/delete/{id}` | ADMIN | Xóa tin tuyển dụng |
-| 45 | GET | `/admin/recruitment/jobs/toggle/{id}` | ADMIN | Bật/tắt trạng thái active |
+| 39 | GET | `/admin/recruitment/jobs` | ADMIN | Danh sách tin tuyển dụng (active/closed, phân trang) |
+| 40 | POST | `/admin/recruitment/jobs/save` | ADMIN | Tạo hoặc cập nhật tin tuyển dụng |
+| 41 | GET | `/admin/recruitment/jobs/delete/{id}` | ADMIN | Xóa tin tuyển dụng |
+| 42 | GET | `/admin/recruitment/jobs/toggle/{id}` | ADMIN | Bật/tắt trạng thái active |
 
 ### Auth & Public Pages
 
 | # | Method | URL | Auth | Description |
 |---|--------|-----|------|-------------|
-| 46 | GET | `/login` | Public | Trang đăng nhập |
-| 47 | POST | `/do-login` | Public | Xử lý đăng nhập (Spring Security) — ADMIN → `/admin/dashboard` |
-| 48 | GET | `/logout` | Auth | Đăng xuất |
-| 49 | GET | `/about` | Public | Trang giới thiệu quán |
+| 43 | GET | `/login` | Public | Trang đăng nhập |
+| 44 | POST | `/do-login` | Public | Xử lý đăng nhập (Spring Security) — ADMIN → `/admin/dashboard` |
+| 45 | GET | `/logout` | Auth | Đăng xuất |
+| 46 | GET | `/about` | Public | Trang giới thiệu quán |
 
 ---
 
@@ -162,4 +154,4 @@
 |-----------|--------|-----------------|
 | **Phan** | 19 (#1–19) | `/`, `/product`, `/admin/products`, `/admin/categories`, `/admin/toppings`, `/admin/dashboard` |
 | **Hà** | 16 (#20–35) | `/cart`, `/checkout`, `/tracking`, `/invoice`, `/admin/orders`, `/admin/history` |
-| **Quỳnh** | 14 (#36–49) | `/admin/expenses`, `/admin/recruitment`, `/careers/apply`, `/login`, `/logout` |
+| **Quỳnh** | 11 (#36–46) | `/admin/recruitment`, `/careers/apply`, `/login`, `/logout` |

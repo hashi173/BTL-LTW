@@ -176,7 +176,7 @@ CREATE TRIGGER trg_log_cart_behavior
     FOR EACH ROW EXECUTE FUNCTION log_cart_behavior();
 ```
 
-**Giải thích:** Mỗi khi khách hàng thêm sản phẩm vào giỏ (`INSERT ON cart_items`), hệ thống tự ghi 1 dòng log vào `user_behavior_logs` để AI Recommendation Engine dùng cho thuật toán gợi ý sản phẩm.
+**Giải thích:** Mỗi khi khách hàng thêm sản phẩm vào giỏ (`INSERT ON cart_items`), hệ thống tự ghi 1 dòng log vào `user_behavior_logs` để theo dõi hành vi mua sắm.
 
 #### Trigger 3: Giữ duy nhất 1 địa chỉ mặc định
 ```sql

@@ -144,53 +144,46 @@ Since the app uses form-based login (Spring Security), all admin requests need a
 
 ---
 
-### 👤 Admin Management (Quỳnh Phan Hà)
+### 👤 Admin Management (Quỳnh)
 
-#### TC-19: Admin - List Expenses
 
-#### TC-24: Admin - Create Shift
-- **POST** `{{base_url}}/admin/shifts/create`
-- Body: `x-www-form-urlencoded`
-  - `userId` = `<staff user UUID>`
-  - `startTime` = `2026-04-25T08:00:00`
-- Expected: `302` redirect to `/admin/shifts`
-
-#### TC-25: Admin - List Expenses
-- **GET** `{{base_url}}/admin/expenses`
-- Expected: `200 OK`, expense list
-
-#### TC-26: Admin - Create Expense
-- **POST** `{{base_url}}/admin/expenses/save`
-- Body: `x-www-form-urlencoded`
-  - `description` = `Coffee beans purchase`
-  - `amount` = `500000`
-  - `expenseDate` = `2026-04-25`
-  - `category` = `Supplies`
-- Expected: `302` redirect to `/admin/expenses`
-
-#### TC-27: Admin - List Job Applications
+#### TC-19: Admin - List Job Applications
 - **GET** `{{base_url}}/admin/recruitment`
 - Expected: `200 OK`, application list
 
-#### TC-28: Public - Submit Job Application
+#### TC-20: Public - Submit Job Application
 - **POST** `{{base_url}}/careers/apply`
 - Body: `form-data`
   - `fullName` = `Le Van C`
   - `email` = `levanc@example.com`
   - `phone` = `0912345678`
   - `position` = `Barista`
-  - `cvFile` = *(attach any PDF/image)*
+  - `cvFile` = *(attach any PDF)*
 - Expected: `302` redirect to `/#careers` with flash success and `trackingCode` (format: `CV-XXXXXXXX`)
 
-#### TC-29: Admin - Update Application Status
+#### TC-21: Admin - Update Application Status
 - **POST** `{{base_url}}/admin/recruitment/<application-UUID>/status`
 - Body: `x-www-form-urlencoded`
   - `status` = `ACCEPTED`
 - Expected: `302` redirect
 
-#### TC-30: Admin - View Shift Detail
-- **GET** `{{base_url}}/admin/shifts/<shift-UUID>`
-- Expected: `200 OK`, shift detail with orders and product summary
+#### TC-22: Admin - List Job Postings
+- **GET** `{{base_url}}/admin/recruitment/jobs`
+- Expected: `200 OK`, list of job postings with codes (JOB-000001, etc.)
+
+#### TC-23: Admin - Create Job Posting
+- **POST** `{{base_url}}/admin/recruitment/jobs/save`
+- Body: `x-www-form-urlencoded`
+  - `title` = `Test Barista`
+  - `location` = `Hanoi`
+  - `type` = `FULL_TIME`
+  - `description` = `Make great coffee`
+  - `requirements` = `1 year experience`
+- Expected: `302` redirect to `/admin/recruitment/jobs`
+
+#### TC-24: Admin - Toggle Job Active Status
+- **GET** `{{base_url}}/admin/recruitment/jobs/toggle/<job-UUID>`
+- Expected: `302` redirect
 
 ---
 

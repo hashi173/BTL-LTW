@@ -280,7 +280,7 @@ APP_PROFILE=dev ./mvnw spring-boot:run
 | Category      | `CAT-00001`, `CAT-00002`, ...        | 4 loại           |
 | Product       | `PRD-00001`, `PRD-00002`, ...        | 6 sản phẩm       |
 | Order         | `ORD-000001`, `ORD-000002`, ...      | ~1000+ đơn       |
-| Job Posting   | —                                    | 3 vị trí         |
+| Job Posting   | `JOB-000001`, `JOB-000002`, ...      | 3 vị trí         |
 
 **Danh sách sản phẩm mẫu:**
 - ☕ Coffee: Cafe Latte, Espresso

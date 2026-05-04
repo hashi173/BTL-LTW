@@ -71,6 +71,7 @@ PENDING → CONFIRMED → SHIPPING → COMPLETED
 | Category | `CAT-00001` | CAT-00001, CAT-00002 |
 | Product | `PRD-00001` | PRD-00001, PRD-00006 |
 | Order | `ORD-000001` | ORD-000001, ORD-000150 |
+| Job Posting | `JOB-000001` | JOB-000001, JOB-000003 |
 | Job Application | `CV-XXXXXXXX` | CV-A8F2C1D3 |
 
 ---
@@ -125,4 +126,4 @@ Default URL: `http://localhost:8080`
 
 Tài khoản dev: `admin` / `123456`
 
-Xem chi tiết: [DEPLOYMENT.md](../DEPLOYMENT.md) | [SEEDING.md](../SEEDING.md)
+Xem chi tiết: [DEPLOYMENT.md](../DEPLOYMENT.md) | [DOCKER_GUIDE.md](../DOCKER_GUIDE.md)

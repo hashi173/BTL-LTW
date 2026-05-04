@@ -123,7 +123,6 @@ public class ProductService {
             double productScore = 0;
 
             String name = normalizeSearchText(product.getName());
-            String tags = normalizeSearchText(product.getTags() != null ? product.getTags().replace(",", " ") : "");
             String description = normalizeSearchText(product.getDescription());
 
             for (String queryTerm : queryTerms) {
@@ -140,11 +139,6 @@ public class ProductService {
                     productScore += 40.0;
                 }
 
-                if (tags.contains(queryTerm)) {
-                    productScore += 60.0;
-                } else if (isFuzzyMatch(queryTerm, tags)) {
-                    productScore += 30.0;
-                }
 
                 if (description.contains(queryTerm)) {
                     productScore += 5.0;

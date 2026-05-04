@@ -75,25 +75,6 @@
 
 ---
 
-### `ingredients`
-| Column | Type | Notes |
-|---|---|---|
-| id | UUID PK | |
-| name | VARCHAR(100) | |
-| unit | VARCHAR(20) | e.g. "g", "ml" |
-| stock_quantity | DOUBLE | Current stock level |
-| low_stock_threshold | DOUBLE | Alert threshold |
-
----
-
-### `product_recipes`
-| Column | Type | Notes |
-|---|---|---|
-| id | UUID PK | |
-| product_id | UUID FK → products | |
-| ingredient_id | UUID FK → ingredients | |
-| quantity_required | DOUBLE | Amount used per 1 unit of product |
-
 ---
 
 ### `orders`
@@ -128,31 +109,7 @@
 | sub_total | NUMERIC(12,2) | unit_price × quantity |
 | snapshot_options | TEXT | Size, toppings string at purchase time |
 
----
 
-### `expenses`
-| Column | Type | Notes |
-|---|---|---|
-| id | UUID PK | |
-| description | VARCHAR(500) | |
-| amount | DOUBLE | |
-| expense_date | DATE | |
-| category | VARCHAR(100) | e.g. "Supplies", "Utilities" |
-
----
-
-### `work_shifts`
-| Column | Type | Notes |
-|---|---|---|
-| id | UUID PK | |
-| user_id | UUID FK → users | Staff member for this shift |
-| start_time | TIMESTAMP | |
-| end_time | TIMESTAMP | Null if still open |
-| start_cash | DOUBLE | Cash in drawer at start |
-| end_cash | DOUBLE | Cash counted at close |
-| total_revenue | DOUBLE | Calculated from orders in this window |
-| cash_variance | DOUBLE | end_cash - (start_cash + revenue) |
-| status | VARCHAR(10) | Enum: OPEN, CLOSED |
 
 ---
 
@@ -160,10 +117,12 @@
 | Column | Type | Notes |
 |---|---|---|
 | id | UUID PK | |
-| title | VARCHAR(200) | |
+| title | VARCHAR(100) | |
+| location | VARCHAR(100) | e.g. "Hanoi", "Ho Chi Minh" |
+| type | VARCHAR(50) | Enum: FULL_TIME, PART_TIME, INTERNSHIP |
 | description | TEXT | |
 | requirements | TEXT | |
-| salary_range | VARCHAR(100) | |
+| job_code | VARCHAR(20) | Unique, format: JOB-000001 |
 | is_active | BOOLEAN | Controls visibility on careers page |
 | created_at | TIMESTAMP | |
 
@@ -234,14 +193,11 @@ Kept in schema for the academic DB demo (trigger showcase).
 ## 3. Relationships (ERD Summary)
 
 ```
-users ──< work_shifts
 users ──< orders
-users ──< job_applications
 users ──< user_addresses
 
 categories ──< products
 products ──< product_sizes
-products ──< product_recipes >── ingredients
 products ──< product_reviews
 
 orders ──< order_items >── products (nullable)
