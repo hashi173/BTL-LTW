@@ -50,13 +50,13 @@ class HomeControllerTest {
         when(request.getSession(true)).thenReturn(session);
         when(productService.getAllProducts()).thenReturn(List.of());
         when(categoryService.getAllCategories()).thenReturn(List.of());
-        when(jobPostingRepository.findTop3ByIsActiveTrueOrderByCreatedAtDesc()).thenReturn(jobs);
+        when(jobPostingRepository.findByIsActiveTrueOrderByCreatedAtDesc()).thenReturn(jobs);
 
         ExtendedModelMap model = new ExtendedModelMap();
         String viewName = homeController.home(model, request);
 
         assertEquals("home", viewName);
         assertEquals(jobs, model.get("jobs"));
-        verify(jobPostingRepository).findTop3ByIsActiveTrueOrderByCreatedAtDesc();
+        verify(jobPostingRepository).findByIsActiveTrueOrderByCreatedAtDesc();
     }
 }

@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 /**
- * Represents a User in the system.
- * Can be a Customer, Staff, or Admin.
+ * Represents a system user with authentication credentials and role assignment.
+ * Roles: ADMIN (full access) or USER (customer access).
  */
 @Entity
 @Table(name = "users")

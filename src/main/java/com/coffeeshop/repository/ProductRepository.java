@@ -13,13 +13,12 @@ import java.util.Optional;
 public interface ProductRepository extends JpaRepository<Product, java.util.UUID> {
         Optional<Product> findByProductCodeIgnoreCase(String productCode);
 
-        List<Product> findByCategoryId(java.util.UUID categoryId);
+
 
         @Query("SELECT DISTINCT p FROM Product p LEFT JOIN FETCH p.category LEFT JOIN FETCH p.sizes WHERE p.category.id = :categoryId AND p.isAvailable = true")
         List<Product> findByCategoryIdAndActiveTrue(@Param("categoryId") java.util.UUID categoryId);
 
-        @Query("SELECT p FROM Product p WHERE p.isAvailable = true")
-        List<Product> findByActiveTrue();
+
 
         @Query("SELECT DISTINCT p FROM Product p LEFT JOIN FETCH p.category LEFT JOIN FETCH p.sizes WHERE p.isAvailable = true")
         List<Product> findAllWithDetails();

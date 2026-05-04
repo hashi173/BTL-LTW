@@ -108,6 +108,7 @@ public class OrderService {
         }
     }
 
+    /** Returns the total number of orders across all statuses. */
     public long countTotalOrders() {
         return orderRepository.count();
     }
@@ -190,9 +191,7 @@ public class OrderService {
                 .replace("\"", "\\\"");
     }
 
-    public List<Object[]> getDailyRevenue() {
-        return orderRepository.findDailyRevenue();
-    }
+
 
     public List<Object[]> getMonthlyRevenue() {
         return orderRepository.findMonthlyRevenue();
@@ -208,9 +207,7 @@ public class OrderService {
                 org.springframework.data.domain.PageRequest.of(0, 5));
     }
 
-    public List<Order> searchOrders(String keyword) {
-        return orderRepository.searchOrders(keyword);
-    }
+
 
     public org.springframework.data.domain.Page<Order> getAllOrdersPaginated(
             org.springframework.data.domain.Pageable pageable) {
@@ -248,7 +245,8 @@ public class OrderService {
         return orderRepository.findAll(pageable);
     }
 
+    /** Alias of {@link #countTotalOrders()} for view compatibility. */
     public long getTotalOrders() {
-        return orderRepository.count();
+        return countTotalOrders();
     }
 }

@@ -31,7 +31,6 @@ class ProductServiceSearchTest {
         product.setId(UUID.randomUUID());
         product.setName("Đá Xay Bạc Hà");
         product.setDescription("Mint ice blended drink");
-        product.setTags("da xay,bac ha,mint");
         product.setBasePrice(BigDecimal.valueOf(55000));
 
         when(productRepository.findAllWithDetails()).thenReturn(List.of(product));

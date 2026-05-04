@@ -7,7 +7,7 @@ import java.util.List;
 
 @org.springframework.stereotype.Repository
 public interface JobApplicationRepository extends JpaRepository<JobApplication, java.util.UUID> {
-    List<JobApplication> findAllByOrderByCreatedAtDesc();
+
 
     java.util.Optional<JobApplication> findByTrackingCode(String trackingCode);
 

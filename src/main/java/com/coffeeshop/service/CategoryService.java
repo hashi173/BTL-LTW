@@ -2,7 +2,6 @@ package com.coffeeshop.service;
 
 import com.coffeeshop.entity.Category;
 import com.coffeeshop.repository.CategoryRepository;
-import com.coffeeshop.util.EntityDisplayUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;

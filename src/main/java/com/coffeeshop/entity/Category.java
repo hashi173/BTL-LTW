@@ -26,7 +26,6 @@ public class Category extends BaseEntity {
     @jakarta.persistence.Column(unique = true, nullable = false, length = 50)
     private String name;
 
-
     @jakarta.persistence.Column(length = 255)
     private String description;
 

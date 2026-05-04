@@ -1,9 +1,10 @@
 package com.coffeeshop.entity;
 
+/** Lifecycle statuses for a customer order. */
 public enum OrderStatus {
-    PENDING, // New order
-    CONFIRMED, // Accepted by staff
-    SHIPPING, // Out for delivery
-    COMPLETED, // Done
-    CANCELLED // Invalid
+    PENDING,    // Awaiting confirmation
+    CONFIRMED,  // Accepted by admin
+    SHIPPING,   // Out for delivery
+    COMPLETED,  // Successfully delivered
+    CANCELLED   // Cancelled by user or admin
 }

@@ -21,7 +21,7 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 public class ProductSize extends BaseEntity {
 
-    // Size name: "S", "M", "L", or "Standard"
+    /** Size name: "S", "M", "L", or "Standard" */
     @Column(name = "size_name")
     private String sizeName;
 

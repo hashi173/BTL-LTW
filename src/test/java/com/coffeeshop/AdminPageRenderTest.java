@@ -1,12 +1,10 @@
 package com.coffeeshop;
 
-import com.coffeeshop.entity.Expense;
 import com.coffeeshop.entity.Order;
 import com.coffeeshop.entity.OrderItem;
 import com.coffeeshop.entity.OrderStatus;
 import com.coffeeshop.entity.Role;
 import com.coffeeshop.entity.User;
-import com.coffeeshop.repository.ExpenseRepository;
 import com.coffeeshop.repository.OrderItemRepository;
 import com.coffeeshop.repository.OrderRepository;
 import com.coffeeshop.repository.UserRepository;
@@ -45,8 +43,6 @@ class AdminPageRenderTest {
     @Autowired
     private OrderItemRepository orderItemRepository;
 
-    @Autowired
-    private ExpenseRepository expenseRepository;
 
 
 
@@ -86,7 +82,6 @@ class AdminPageRenderTest {
     private void seedHistory() {
         orderItemRepository.deleteAll();
         orderRepository.deleteAll();
-        expenseRepository.deleteAll();
         userRepository.deleteAll();
 
         User admin = new User();
@@ -126,19 +121,6 @@ class AdminPageRenderTest {
         marchOrder.setCreatedAt(LocalDateTime.of(2026, 3, 15, 14, 0));
         orderRepository.save(marchOrder);
 
-        Expense aprilExpense = new Expense();
-        aprilExpense.setDescription("April beans");
-        aprilExpense.setCategory("Ingredients");
-        aprilExpense.setAmount(70000.0);
-        aprilExpense.setExpenseDate(LocalDate.of(2026, 4, 5));
-        expenseRepository.save(aprilExpense);
-
-        Expense marchExpense = new Expense();
-        marchExpense.setDescription("March utilities");
-        marchExpense.setCategory("Utilities");
-        marchExpense.setAmount(55000.0);
-        marchExpense.setExpenseDate(LocalDate.of(2026, 3, 8));
-        expenseRepository.save(marchExpense);
     }
 
     private UUID seedOrderDetail() {

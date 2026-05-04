@@ -15,7 +15,7 @@ import java.util.UUID;
 @Repository
 public interface OrderRepository extends JpaRepository<Order, UUID> {
 
-    List<Order> findByUserId(UUID userId);
+
 
     long countByStatus(OrderStatus status);
 
@@ -24,13 +24,9 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
 
     java.util.Optional<Order> findByTrackingCode(String trackingCode);
 
-    @Query("SELECT SUM(o.totalAmount) FROM Order o WHERE o.user = :user AND o.createdAt BETWEEN :start AND :end AND o.status = com.coffeeshop.entity.OrderStatus.COMPLETED")
-    Double sumRevenueByUserAndDateRange(@Param("user") com.coffeeshop.entity.User user,
-            @Param("start") java.time.LocalDateTime start,
-            @Param("end") java.time.LocalDateTime end);
 
-    @Query("SELECT FUNCTION('DATE', o.createdAt) as date, SUM(o.totalAmount) as total FROM Order o WHERE o.status = com.coffeeshop.entity.OrderStatus.COMPLETED GROUP BY FUNCTION('DATE', o.createdAt) ORDER BY date ASC")
-    List<Object[]> findDailyRevenue();
+
+
 
     @Query("SELECT i.snapshotProductName, SUM(i.quantity) FROM OrderItem i JOIN i.order o WHERE o.status = com.coffeeshop.entity.OrderStatus.COMPLETED GROUP BY i.snapshotProductName ORDER BY SUM(i.quantity) DESC")
     List<Object[]> findTopSellingProducts(Pageable pageable);
@@ -59,14 +55,9 @@ public interface OrderRepository extends JpaRepository<Order, UUID> {
 
     List<Order> findAllByStatusInOrderByCreatedAtDesc(List<OrderStatus> statuses);
 
-    @Query("SELECT o FROM Order o WHERE " +
-            "LOWER(o.customerName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(COALESCE(o.phone, '')) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "LOWER(COALESCE(o.trackingCode, '')) LIKE LOWER(CONCAT('%', :keyword, '%')) OR " +
-            "CAST(o.id AS string) LIKE CONCAT('%', :keyword, '%')")
-    List<Order> searchOrders(@Param("keyword") String keyword);
 
-    Page<Order> findAllByOrderByCreatedAtDesc(Pageable pageable);
+
+
 
     Page<Order> findByStatus(OrderStatus status, Pageable pageable);
 

@@ -22,10 +22,6 @@ import java.util.List;
 public class Product extends BaseEntity {
 
     // --- Relationships ---
-
-
-
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     private Category category;
@@ -41,11 +37,8 @@ public class Product extends BaseEntity {
     @Column(nullable = false, unique = true, length = 100)
     private String name;
 
-
     @Column(columnDefinition = "TEXT")
     private String description;
-
-
 
     @Column(length = 500)
     private String image;

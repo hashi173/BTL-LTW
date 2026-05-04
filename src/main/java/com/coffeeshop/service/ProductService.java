@@ -3,7 +3,6 @@ package com.coffeeshop.service;
 import com.coffeeshop.entity.Product;
 import com.coffeeshop.entity.ProductSize;
 import com.coffeeshop.repository.ProductRepository;
-import com.coffeeshop.util.EntityDisplayUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

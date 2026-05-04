@@ -13,9 +13,9 @@ import java.util.List;
 
 /**
  * Represents a Customer Order.
- * Merges the PDF schema (UUID, UserAddress, Promotion, grandTotal, orderStatus)
- * with the legacy fields (customerName, phone, trackingCode, etc.) required
- * by the existing Thymeleaf UI and controllers.
+ * Uses a dual-field design: structured fields (User, UserAddress, Promotion,
+ * grandTotal) for relational integrity, alongside legacy flat fields
+ * (customerName, phone, trackingCode) for backward-compatible UI rendering.
  */
 @Entity
 @Table(name = "orders") // "order" is a reserved keyword in SQL, so we use "orders"
