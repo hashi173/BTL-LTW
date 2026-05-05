@@ -34,7 +34,7 @@ Since the app uses form-based login (Spring Security), all admin requests need a
 
 ---
 
-### 🍵 Products (Thành viên 1)
+### 🍵 Products & Categories (Phan)
 
 #### TC-01: Get Home Page (public)
 - **GET** `{{base_url}}/`
@@ -76,7 +76,7 @@ Since the app uses form-based login (Spring Security), all admin requests need a
 
 ---
 
-### 🛒 Cart & Orders (Thành viên 2)
+### 🛒 Cart, Checkout, Tracking, Invoice, Orders, History (Hà)
 
 #### TC-08: View Cart (empty)
 - **GET** `{{base_url}}/cart`
@@ -144,7 +144,7 @@ Since the app uses form-based login (Spring Security), all admin requests need a
 
 ---
 
-### 👤 Admin Management (Quỳnh)
+### 👤 Recruitment, Auth, Toppings, Dashboard (Quỳnh)
 
 
 #### TC-19: Admin - List Job Applications

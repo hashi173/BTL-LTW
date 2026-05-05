@@ -85,7 +85,7 @@
 
 ---
 
-## 📦 Câu hỏi cho Phan — Products, Categories, Toppings, Dashboard
+## 📦 Câu hỏi cho Phan — Products, Categories
 
 **Q: Upload ảnh sản phẩm xử lý ra sao?**
 > File upload dùng `MultipartFile`, lưu vào thư mục `uploads/products/` với tên UUID-prefixed.
@@ -138,7 +138,7 @@
 
 ---
 
-## 📦 Câu hỏi cho Quỳnh — Recruitment, Auth
+## 📦 Câu hỏi cho Quỳnh — Recruitment, Auth, Toppings, Dashboard
 
 **Q: Job Application tracking code khác Order tracking code không?**
 > Có. Order: `ORD-XXXXXX`. Job application: `CV-XXXXXXXX` (8 ký tự).
