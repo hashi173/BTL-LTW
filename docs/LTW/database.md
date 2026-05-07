@@ -34,7 +34,6 @@
 |---|---|---|
 | id | UUID PK | |
 | name | VARCHAR(100) | e.g. "Coffee", "Tea" |
-| name_vi | VARCHAR(100) | Vietnamese name |
 | description | TEXT | |
 
 ---
@@ -45,14 +44,9 @@
 | id | UUID PK | |
 | category_id | UUID FK → categories | |
 | name | VARCHAR(200) | |
-| name_vi | VARCHAR(200) | |
 | description | TEXT | |
-| description_vi | TEXT | |
 | image | VARCHAR(500) | URL or relative path |
-| tags | TEXT | Comma-separated search tags |
 | is_active | BOOLEAN | Soft-delete / hide from menu |
-| avg_rating | NUMERIC(3,2) | Updated by trigger `trg_update_product_rating` |
-| review_count | INT | Updated by trigger |
 
 ---
 
@@ -143,99 +137,12 @@
 
 ---
 
-### `user_addresses`
-| Column | Type | Notes |
-|---|---|---|
-| id | UUID PK | |
-| user_id | UUID FK → users | |
-| full_address | TEXT | |
-| is_default | BOOLEAN | Enforced by trigger (only one default per user) |
-
----
-
-### `promotions`
-| Column | Type | Notes |
-|---|---|---|
-| id | UUID PK | |
-| code | VARCHAR(50) | Promo code |
-| discount_type | VARCHAR(20) | PERCENTAGE or FIXED |
-| discount_value | NUMERIC(10,2) | |
-| min_order_value | NUMERIC(10,2) | Minimum cart total to apply |
-| start_date | TIMESTAMP | |
-| end_date | TIMESTAMP | |
-
----
-
-### `product_reviews`
-| Column | Type | Notes |
-|---|---|---|
-| id | UUID PK | |
-| product_id | UUID FK → products | |
-| user_id | UUID FK → users | |
-| rating_score | INT | 1–5 |
-| comment | TEXT | |
-| created_at | TIMESTAMP | |
-
----
-
-### `shopping_sessions` + `cart_items` (DB-level, AI trigger targets)
-These tables exist in the schema for the stored procedure and trigger demonstrations.
-The application uses a **session-based cart (`HttpSession`)** and does not write to these tables during normal operation.
-
----
-
-### `user_behavior_logs`
-Tracks `ADD_TO_CART` events via a DB trigger. Not used by the application UI.
-Kept in schema for the academic DB demo (trigger showcase).
-
----
-
 ## 3. Relationships (ERD Summary)
-
 ```
 users ──< orders
-users ──< user_addresses
 
 categories ──< products
 products ──< product_sizes
-products ──< product_reviews
 
 orders ──< order_items >── products (nullable)
 ```
-
----
-
-## 4. Stored Procedures (`schema-advanced.sql`)
-
-### `place_order(user_id, address_id, promotion_id, items JSONB)`
-- Validates delivery address ownership
-- Loops through items JSONB, checks product availability
-- Applies promotion discount if valid and min order met
-- Inserts into `orders` + `order_items` atomically
-
-### `get_revenue_report(from_date, to_date)`
-- Returns per-day aggregation: `report_date`, `total_orders`, `total_revenue`, `avg_order_val`
-- Filtered to `order_status = 'COMPLETED'`
-
----
-
-## 5. Triggers (`schema-advanced.sql`)
-
-### `trg_update_product_rating` (AFTER INSERT/UPDATE/DELETE on `product_reviews`)
-Recalculates `avg_rating` and `review_count` on the parent `products` row.
-
-### `trg_log_cart_behavior` (AFTER INSERT on `cart_items`)
-Looks up the session owner and writes an `ADD_TO_CART` log to `user_behavior_logs` with weight `0.5`.
-
-### `trg_single_default_address` (BEFORE INSERT/UPDATE on `user_addresses`)
-Ensures only one `is_default = TRUE` address exists per user by unsetting all others.
-
----
-
-## 6. Transaction Demo (in `schema-advanced.sql`)
-
-A commented-out transaction block demonstrates the atomic checkout pattern:
-1. Call `place_order(...)` stored procedure
-2. Delete cart items from `cart_items`
-3. Reset `shopping_sessions.total_amount` to 0
-4. `COMMIT` (or `ROLLBACK` on any error)

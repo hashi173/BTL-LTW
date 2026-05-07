@@ -17,24 +17,10 @@
 
 **Q: Database các em dùng gì? Giải thích cấu trúc chính?**
 
-> PostgreSQL 15. Các bảng chính: `users`, `products`, `categories`, `product_sizes`, `toppings`, `orders`, `order_items`, `expenses`, `job_postings`, `job_applications`.
+> PostgreSQL 15. Các bảng chính: `users`, `products`, `categories`, `product_sizes`, `toppings`, `orders`, `order_items`, `job_postings`, `job_applications`.
 > Primary key dùng UUID để tránh sequential ID guessing.
 > `order_items` lưu snapshot (tên sản phẩm, giá tại thời điểm mua) vì sản phẩm có thể bị sửa/xóa sau này — đây là kỹ thuật phổ biến trong thương mại điện tử.
 
----
-
-**Q: Giải thích Trigger và Stored Procedure trong project?**
-
-> Có trong `schema-advanced.sql`:
-> - **Stored Procedure** `place_order`: Tạo đơn hàng nguyên tử, kiểm tra địa chỉ, áp dụng khuyến mãi.
-> - **Stored Procedure** `get_revenue_report`: Thống kê doanh thu theo ngày trong khoảng thời gian.
->
-> **Trigger:**
-> - `trg_update_product_rating`: Tự động cập nhật `avg_rating`, `review_count` khi có đánh giá mới.
-> - `trg_log_cart_behavior`: Ghi log hành vi khi thêm vào giỏ hàng.
-> - `trg_single_default_address`: Đảm bảo mỗi user chỉ có 1 địa chỉ `is_default = TRUE`.
-
----
 
 **Q: Các em xử lý bảo mật như thế nào?**
 
@@ -71,7 +57,7 @@
 
 > Method `placeOrder` trong `OrderService` dùng annotation `@Transactional`.
 > Nếu lỗi xảy ra trong quá trình lưu Order hoặc OrderItems, Spring sẽ rollback toàn bộ.
-> Trong `schema-advanced.sql` còn có ví dụ Transaction thủ công bằng SQL thuần (BEGIN/COMMIT/ROLLBACK).
+
 
 ---
 

@@ -49,12 +49,6 @@ public class Product extends BaseEntity {
     @Column(name = "is_available")
     private boolean isAvailable = true;
 
-    @Column(name = "avg_rating", precision = 3, scale = 2)
-    private java.math.BigDecimal avgRating;
-
-    @Column(name = "review_count")
-    private Integer reviewCount = 0;
-
     @Transient
     public String getDisplayCode() {
         return org.springframework.util.StringUtils.hasText(productCode)

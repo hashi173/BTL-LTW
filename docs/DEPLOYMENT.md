@@ -10,10 +10,9 @@ Hướng dẫn chi tiết từng bước để cài đặt và chạy ứng dụ
 2. [Cài đặt môi trường](#2-cài-đặt-môi-trường)
 3. [Tạo database PostgreSQL](#3-tạo-database-postgresql)
 4. [Cấu hình Spring Boot](#4-cấu-hình-spring-boot)
-5. [Chạy ứng dụng — Dev mode (có dữ liệu mẫu)](#5-chạy-ứng-dụng--dev-mode-có-dữ-liệu-mẫu)
-6. [Chạy ứng dụng — SQL-only mode (demo DBMS)](#6-chạy-ứng-dụng--sql-only-mode-demo-dbms)
-7. [Kiểm tra ứng dụng](#7-kiểm-tra-ứng-dụng)
-8. [Xử lý lỗi thường gặp](#8-xử-lý-lỗi-thường-gặp)
+5. [Chạy ứng dụng — Môi trường phát triển (có dữ liệu mẫu)](#5-chạy-ứng-dụng--môi-trường-phát-triển-có-dữ-liệu-mẫu)
+6. [Kiểm tra ứng dụng](#6-kiểm-tra-ứng-dụng)
+7. [Xử lý lỗi thường gặp](#7-xử-lý-lỗi-thường-gặp)
 
 ---
 
@@ -234,7 +233,7 @@ export DB_PASSWORD="your_password"
 
 ---
 
-## 5. Chạy ứng dụng — Dev mode (có dữ liệu mẫu)
+## 5. Chạy ứng dụng — Môi trường phát triển (có dữ liệu mẫu)
 
 > Chế độ này tự động seed dữ liệu mẫu (sản phẩm, đơn hàng, lịch sử) mỗi lần khởi động.
 > **Phù hợp cho:** phát triển, demo UI, kiểm tra dashboard.
@@ -288,85 +287,7 @@ APP_PROFILE=dev ./mvnw spring-boot:run
 - 🥤 Smoothie: Strawberry Smoothie
 - 🥥 Juice: Coconut Juice
 
----
-
-## 6. Chạy ứng dụng — SQL-only mode (demo DBMS)
-
-> Chế độ này **không seed** dữ liệu tự động. Bạn tự import SQL scripts để demo stored procedures, triggers, và raw data.
-> **Phù hợp cho:** thuyết trình DBMS, kiểm tra SQL scripts.
-
-### Bước 6.1: Khởi chạy app lần đầu (để Hibernate tạo bảng)
-
-**Windows (PowerShell):**
-
-```powershell
-$env:APP_PROFILE = "prod"
-.\mvnw.cmd spring-boot:run
-```
-
-**macOS / Linux:**
-
-```bash
-APP_PROFILE=prod ./mvnw spring-boot:run
-```
-
-> Chờ đến khi console hiện `Started Application in X seconds`.
-> Lúc này các bảng đã được tạo → dừng app bằng `Ctrl + C`.
-
-### Bước 6.2: Import SQL scripts
-
-**Windows (PowerShell):**
-
-```powershell
-# Đặt encoding UTF-8
-$Env:PGCLIENTENCODING = 'utf-8'
-chcp 65001
-
-# Import schema nâng cao (functions, triggers, procedures)
-psql -U cafe_admin -d cafe_db -f src/main/resources/schema-advanced.sql
-
-# Import dữ liệu mẫu SQL
-psql -U cafe_admin -d cafe_db -f src/main/resources/seed-data.sql
-```
-
-**macOS / Linux:**
-
-```bash
-# Import schema nâng cao
-psql -U cafe_admin -d cafe_db -f src/main/resources/schema-advanced.sql
-
-# Import dữ liệu mẫu SQL
-psql -U cafe_admin -d cafe_db -f src/main/resources/seed-data.sql
-```
-
-> Nếu dùng **pgAdmin**: mở Query Tool trên database `cafe_db` → paste nội dung từng file SQL → chạy.
-
-### Bước 6.3: Chạy lại app
-
-**Windows:**
-
-```powershell
-$env:APP_PROFILE = "prod"
-.\mvnw.cmd spring-boot:run
-```
-
-**macOS / Linux:**
-
-```bash
-APP_PROFILE=prod ./mvnw spring-boot:run
-```
-
-**Tài khoản test (SQL-only mode):**
-
-| Username | Password   | Vai trò |
-|----------|------------|---------|
-| `admin`  | `password` | ADMIN   |
-| `user1`  | `password` | USER    |
-| `user2`  | `password` | USER    |
-
----
-
-## 7. Kiểm tra ứng dụng
+## 6. Kiểm tra ứng dụng
 
 Sau khi khởi chạy thành công, mở trình duyệt truy cập:
 
@@ -382,7 +303,7 @@ Sau khi khởi chạy thành công, mở trình duyệt truy cập:
 
 ---
 
-## 8. Xử lý lỗi thường gặp
+## 7. Xử lý lỗi thường gặp
 
 ### Lỗi: `relation "xxx" does not exist`
 
@@ -453,5 +374,4 @@ $env:SERVER_PORT = "8081"
 | Mục đích                    | Chế độ nên dùng         |
 |-----------------------------|-------------------------|
 | Phát triển, test UI         | `APP_PROFILE=dev`       |
-| Demo DBMS (SQL, triggers)   | `APP_PROFILE=prod` + SQL|
 | Demo sản phẩm hoàn chỉnh   | `APP_PROFILE=dev`       |

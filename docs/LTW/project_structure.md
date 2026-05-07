@@ -91,7 +91,7 @@ Hashiji-Cafe-main/
 │   └── resources/
 │       ├── application.properties            # DB URL, JPA config, Redis, file upload settings
 │       ├── application-dev.properties        # Dev profile overrides (seeding enabled)
-│       ├── schema-advanced.sql               # PostgreSQL stored procedures, triggers, transaction demos
+
 │       ├── seed-data.sql                     # Initial data (categories, products, admin user)
 │       ├── messages.properties               # i18n strings (Vietnamese default)
 │       ├── static/

@@ -34,8 +34,7 @@ A full-stack coffee shop management platform built with **Java 17 / Spring Boot 
 - **Status Tracking**: Applicants can check their progress using unique tracking codes.
 
 ### Financial Tracking
-- **Expense Management**: Log and categorize business expenses (ingredients, utilities, etc.).
-- **Profit Reporting**: Automatic calculation of net profit by comparing revenue against expenses.
+- **Profit Reporting**: Automatic calculation of net profit by comparing revenue against costs.
 - **Financial History**: Monthly archive of financial performance for historical analysis.
 
 ### Security
@@ -69,13 +68,10 @@ The project includes a `docker-compose.yml` to spin up PostgreSQL 15, pgAdmin 4,
 docker compose up -d --build
 ```
 
-### 2. Initialize Database & Run DBMS Demo
-We have prepared a complete SQL script featuring Triggers, Stored Procedures, and Transactions for the DBMS course report.
-1. In the default `dev` profile, the Spring Boot app seeds demo users, products, orders, expenses, and chart history through `DataSeeder.java`.
+### 2. Initialize Database
+1. In the default `dev` profile, the Spring Boot app automatically seeds demo users, products, orders, and chart history through `DataSeeder.java`.
 2. The web application will be available at `http://localhost:8080`.
-3. Access the database via pgAdmin (`http://localhost:5050`) or `psql`.
-4. If you want the PostgreSQL course/demo scripts, load `schema-advanced.sql` manually after the app has created its tables. Load `seed-data.sql` only for the DBMS demo flow, not together with the `dev` profile seed.
-5. Follow the detailed steps in the [db_demo_script.md](docs/DMBS/db_demo_script.md) file to showcase Triggers, Stored Procedures, and Transactions to your instructor.
+3. Access the database via pgAdmin (`http://localhost:5050`) or `psql` using the credentials in `application.properties`.
 
 ---
 
@@ -103,7 +99,7 @@ src/main/java/com/coffeeshop/
   service/      -- Core business logic services
 
 src/main/resources/
-  schema-advanced.sql -- Advanced PostgreSQL Features (Triggers/Procedures)
+
   seed-data.sql       -- Manual SQL demo data for DBMS presentation only
   application.properties -- Primary configuration
   templates/    -- Thymeleaf templates (admin, storefront, dashboard, etc.)

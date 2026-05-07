@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final com.coffeeshop.repository.OrderItemRepository orderItemRepository;
 
     @org.springframework.cache.annotation.Cacheable("products")
     public List<Product> getAllProducts() {
@@ -88,8 +89,19 @@ public class ProductService {
         return productRepository.save(product);
     }
 
+    @Transactional
+    @org.springframework.cache.annotation.CacheEvict(value = "products", allEntries = true)
     public void deleteProduct(@org.springframework.lang.NonNull java.util.UUID id) {
-        updateStatus(id, false);
+        if (orderItemRepository.existsByProduct_Id(id)) {
+            updateStatus(id, false);
+        } else {
+            try {
+                productRepository.deleteById(id);
+                productRepository.flush();
+            } catch (org.springframework.dao.DataIntegrityViolationException e) {
+                updateStatus(id, false);
+            }
+        }
     }
 
     @org.springframework.cache.annotation.CacheEvict(value = "products", allEntries = true)
